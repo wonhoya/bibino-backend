@@ -17,6 +17,7 @@
     "mocha": true
   },
   "ignorePatterns": [
+    "bin/",
     "node_modules/",
     "spec/"
   ],
