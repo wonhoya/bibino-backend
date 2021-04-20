@@ -8,18 +8,27 @@
     "dev": "nodemon --inspect ./bin/www"
   },
   "dependencies": {
+    "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
     "express": "~4.16.1",
+    "helmet": "^4.5.0",
     "http-errors": "~1.6.3",
+    "mongoose": "^5.12.5",
     "morgan": "~1.9.1",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "validator": "^13.5.2"
   },
   "devDependencies": {
     "eslint": "^7.24.0",
+    "eslint-config-node": "^4.1.0",
     "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "prettier": "2.2.1"
+    "prettier": "^2.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
