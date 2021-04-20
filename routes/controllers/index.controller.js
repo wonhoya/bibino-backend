@@ -4,4 +4,6 @@ const getIndex = (req, res, next) => {
   res.send("Hello bibino!");
 };
 
-exports.getIndex = getIndex;
+const getProfile = (req, res, next) => {};
+
+exports.getIndex = { getIndex, getProfile };

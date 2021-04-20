@@ -2,8 +2,10 @@
 
 const router = require("express").Router();
 
-const { getIndex } = require("./controllers/index.controller");
+const { getIndex, getProfile } = require("./controllers/index.controller");
 
 router.route("/").get(getIndex);
+
+router.route("/profile").get(getProfile);
 
 module.exports = router;
