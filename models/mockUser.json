@@ -1,0 +1,15 @@
+{
+  "email": "emiya@muljom.dao",
+  "name": "RICH",
+  "imagePath": "nadomola",
+  "beers": [
+    {
+      "detail":{
+        "name": "TERRA",
+        "imagePath": "somewher",
+        "description": "MUYAHOOOOOOO"
+      },
+      "myBeerImageURL": "https://bibino.s3.amazonaws.com/user-beers/a.png"
+    }
+  ]
+}

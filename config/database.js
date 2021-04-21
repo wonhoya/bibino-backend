@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const { databaseURI, databasePassword } = require("./index");
 
 mongoose.connect(databaseURI.replace("<password>", databasePassword), {
@@ -6,4 +7,5 @@ mongoose.connect(databaseURI.replace("<password>", databasePassword), {
   useCreateIndex: true,
   useFindAndModify: false,
   useUnifiedTopology: true,
+  dbName: "bibino",
 });

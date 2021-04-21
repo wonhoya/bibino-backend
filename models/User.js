@@ -25,12 +25,9 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Beer",
       },
-      localImagePath: {
-        type: mongoose.Schema.Types.String,
-        validate: [
-          validator.isDataURI,
-          "Please provide a valid local image path",
-        ],
+      myBeerImageURL: {
+        type: String,
+        validate: [validator.isURL, "Please provide a valid url"],
       },
     },
   ],

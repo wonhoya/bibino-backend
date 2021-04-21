@@ -1,11 +1,10 @@
-// 폴더 구조 예제를 위한 파일입니다. 삭제 후 진행하시면 됩니다.
-
 const router = require("express").Router();
 
 const { getIndex, getProfile } = require("./controllers/index.controller");
+const { uploadProfileMulter } = require("../utils/multers");
 
 router.route("/").get(getIndex);
 
-router.route("/profile").get(getProfile);
+router.route("/profile").get(uploadProfileMulter.single("ABC"), getProfile);
 
 module.exports = router;
