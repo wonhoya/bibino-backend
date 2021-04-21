@@ -15,19 +15,35 @@ const getBeer = async (req, res, next) => {
 
 const scanPhoto = async (req, res, next) => {
   try {
-    console.log(req.body.message);
+    // console.log(req.body.message);
 
-    const parsedImage = await callGoogleVisionAsync(req.body.base64);
-    const parsedStrings = parsedImage.split("\n");
-    const flatParsedStrings = parsedStrings.map((string) =>
-      string.toLowerCase().replace(/\s+/g, "")
-    );
+    // const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
+    // const detectedBeerTexts = parsedImage.split("\n");
+    // const flatBeerTexts = parsedStrings.map((string) =>
+    //   string.toLowerCase().replace(/\s+/g, "")
+    // );
 
-    // const flatParsedStrings = parsedStrings.toLowerCase();
-    console.log("splitted", parsedStrings);
-    console.log("flatted", flatParsedStrings);
+    const flatBeerTexts = ["ef", "ef", "egeh", "obgoldenlager"];
+    const beersInDb = await Beer.find().select("name");
+    console.log("beers", beersInDb);
 
-    res.json({ message: "connection established" });
+    const findBeerInfo = (textsInImage, beerList) => {
+      for (const text of textsInImage) {
+        for (const beerName of beerList) {
+          if (beerName.name.toLowerCase().replace(/\s+/g, "") === text) {
+            return beerName._id;
+          }
+        }
+      }
+    };
+
+    const matchBeerId = findBeerInfo(flatBeerTexts, beersInDb);
+    console.log("id is", matchBeerId);
+
+    const beerInfo = await Beer.findById(matchBeerId);
+    console.log(beerInfo);
+
+    res.json({ beerInfo });
   } catch (error) {
     console.log(error);
   }
