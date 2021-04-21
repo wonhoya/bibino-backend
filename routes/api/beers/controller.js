@@ -1,6 +1,6 @@
 const createError = require("http-errors");
 
-const Beer = require("../../models/Beer");
+const Beer = require("../../../models/Beer");
 
 const getBeer = async (req, res, next) => {
   try {
@@ -11,4 +11,4 @@ const getBeer = async (req, res, next) => {
   }
 };
 
-exports.getBeer = getBeer;
+module.exports = { getBeer };

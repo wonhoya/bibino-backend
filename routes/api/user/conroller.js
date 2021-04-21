@@ -1,8 +1,4 @@
-const getIndex = (req, res, next) => {
-  res.send("Hello bibino!");
-};
-
-const getProfile = (req, res, next) => {
+const getUser = (req, res, next) => {
   // const uploadParams = {
   //   Bucket: `${BIBINO}/${USER_BEERS}`,
   //   Key: "test",
@@ -30,4 +26,4 @@ const getProfile = (req, res, next) => {
   res.send("Successfully uploaded " + req.files.length + " files!");
 };
 
-module.exports = { getIndex, getProfile };
+module.exports = { getIndex, getUser };
