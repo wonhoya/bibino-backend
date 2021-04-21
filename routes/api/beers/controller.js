@@ -19,9 +19,13 @@ const scanPhoto = async (req, res, next) => {
 
     const parsedImage = await callGoogleVisionAsync(req.body.base64);
     const parsedStrings = parsedImage.split("\n");
-    const flatParsedStrings = parsedStrings.toLowerCase();
+    const flatParsedStrings = parsedStrings.map((string) =>
+      string.toLowerCase().replace(/\s+/g, "")
+    );
+
+    // const flatParsedStrings = parsedStrings.toLowerCase();
     console.log("splitted", parsedStrings);
-    console.log("splitted", flatParsedStrings);
+    console.log("flatted", flatParsedStrings);
 
     res.json({ message: "connection established" });
   } catch (error) {
