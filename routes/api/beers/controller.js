@@ -2,6 +2,7 @@ const createError = require("http-errors");
 const callGoogleVisionAsync = require("../../../util/callGoogleVisionAsync");
 
 const Beer = require("../../../models/Beer");
+const mockData = require("../../../models/mockDatabase.json");
 
 const getBeer = async (req, res, next) => {
   try {
@@ -15,9 +16,12 @@ const getBeer = async (req, res, next) => {
 const scanPhoto = async (req, res, next) => {
   try {
     console.log(req.body.message);
-    const result = await callGoogleVisionAsync(req.body.base64);
 
-    console.log("vision result is", result);
+    const parsedImage = await callGoogleVisionAsync(req.body.base64);
+    const parsedStrings = parsedImage.split("\n");
+    const flatParsedStrings = parsedStrings.toLowerCase();
+    console.log("splitted", parsedStrings);
+    console.log("splitted", flatParsedStrings);
 
     res.json({ message: "connection established" });
   } catch (error) {

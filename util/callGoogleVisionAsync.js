@@ -23,7 +23,11 @@ async function callGoogleVisionAsync(image) {
   });
 
   const parsed = await response.json();
-  console.log("Result:", parsed);
+  // console.log("Result:", parsed);
+  // console.log("Result: responses", parsed.responses);
+  // console.log("Result: responses", parsed.responses);
+  // console.log("Result: textAnno", parsed.responses[0].textAnnotations);
+  // console.log("Result: fullTextAnno", parsed.responses[0].fullTextAnnotation);
 
   return parsed.responses[0].textAnnotations[0].description;
 }
