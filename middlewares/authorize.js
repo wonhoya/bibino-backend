@@ -1,1 +1,3 @@
-const authorize = 
+const authorize = (req, res, next) => {};
+
+module.exports = authorize;

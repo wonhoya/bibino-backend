@@ -1,5 +1,5 @@
-const getToken = (authorization) => {
+const getidToken = (authorization) => {
   return authorization.slice(authorization.indexOf(" ") + 1);
 };
 
-module.exports = getToken;
+module.exports = getidToken;
