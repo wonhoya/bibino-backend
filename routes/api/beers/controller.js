@@ -10,7 +10,7 @@ const getBeer = async (req, res, next) => {
 
     res.json(beer);
   } catch (err) {
-    next(createError(err));
+    next(createError(500, err, "Internal Server Error"));
   }
 };
 
@@ -21,7 +21,7 @@ const getBeerStats = async (req, res, next) => {
 
     res.json(stats);
   } catch (err) {
-    next(createError(err));
+    next(createError(500, err, "Internal Server Error"));
   }
 };
 
@@ -34,28 +34,12 @@ const getBeerComments = async (req, res, next) => {
 
     res.json(comments);
   } catch (err) {
-    next(createError(err));
+    next(createError(500, err, "Internal Server Error"));
   }
 };
-
-// const getRecommendationsToUser = async (req, res, next) => {
-//   try {
-//   } catch (err) {
-//     next(createError(err));
-//   }
-// };
-
-// const getRecommendationsByBeer = async (req, res, next) => {
-//   try {
-//   } catch (err) {
-//     next(createError(err));
-//   }
-// };
 
 module.exports = {
   getBeer,
   getBeerStats,
   getBeerComments,
-  // getRecommendationsToUser,
-  // getRecommendationsByBeer,
 };

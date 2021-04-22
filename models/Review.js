@@ -68,22 +68,14 @@ reviewSchema.statics.getStats = function (id, isUser) {
 
 reviewSchema.statics.getComments = function (id, isUser) {
   try {
-    const match = isUser ? { user: id } : { beer: id };
+    const match = isUser
+      ? { user: mongoose.Types.ObjectId(id) }
+      : { beer: mongoose.Types.ObjectId(id) };
     const comments = Review.find(match)
       .select("user comment rating")
       .populate("user", "name imagePath");
 
     return comments;
-  } catch (err) {
-    return err;
-  }
-};
-
-reviewSchema.statics.getRecommendations = async function (id, isUser) {
-  try {
-    const match = isUser ? { user: id } : { beer: id };
-    const recommendations = await Review;
-    return recommendations;
   } catch (err) {
     return err;
   }
