@@ -8,10 +8,10 @@ admin.initializeApp({
 });
 
 const authenticateUser = async (idToken) => {
-  debugger;
-  const { verifyIdToken } = admin.auth();
-  const decodedToken = await verifyIdToken(idToken);
-  console.log(decodedToken);
+
+  const { name, email, picture } = await admin.auth().verifyIdToken(idToken);
+
+  return { name, email, picture };
 };
 
 module.exports = authenticateUser;

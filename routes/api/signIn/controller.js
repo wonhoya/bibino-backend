@@ -1,15 +1,28 @@
+const createError = require("http-errors");
+const jwt = require('jsonwebtoken');
+
+const User = require("../../../models/User");
+
 const getidToken = require("../../../utils/getToken");
-const { authenticateUser } = require("../../../config/auth.js");
+const authenticateUser = require("../../../config/auth");
 
 const signInUser = async (req, res, next) => {
-  const { authorization } = req.header;
-  let idToken;
+  const { authorization } = req.headers;
 
   if (authorization.startsWith("Bearer")) {
-    idToken = getidToken(authorization);
-    await authenticateUser(idToken);
-  }
+    try {
+      const idToken = getidToken(authorization);
+      const { name, email, picture } = await authenticateUser(idToken);
+      const user = await User.findOneAndUpdate({ email }, { name, email, imagePath: picture }, { upsert: true, lean: true, new: true });
 
+      const accessToken = jwt.sign(user._id.toString(), process.env.PRIVATE_KEY);
+
+      return res.json({ user, accessToken });
+
+    } catch (err) {
+      next(createError(500, `Can't insert a new User in DB.\nOriginal error message: ${err.message}`));
+    }
+  }
 };
 
 exports.signInUser = signInUser;
