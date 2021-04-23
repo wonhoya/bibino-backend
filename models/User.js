@@ -16,15 +16,16 @@ const userSchema = new mongoose.Schema({
     minlength: 2,
   },
   imagePath: {
-    required: [true, "Please provide your url"],
-    validate: [validator.isURL, "Please provide a valid url"],
     type: String,
+    validate: [validator.isURL, "Please provide a valid url"],
   },
   beers: [
     {
       detail: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Beer",
+        required: [true, "Please provide the beer mongoId"],
+        validate: [validator.isMongoId, "Please provide a valid beer mongoId"],
       },
       myBeerImageURL: {
         type: String,
@@ -32,6 +33,36 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+  reviewCounts: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+    validate: [validator.isInt, "Please provide a valid review counts"],
+  },
+  totalRating: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+    validate: [validator.isNumeric, "Please provide a valid total rating"],
+  },
+  totalBody: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+    validate: [validator.isNumeric, "Please provide a valid total body"],
+  },
+  totalAroma: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+    validate: [validator.isNumeric, "Please provide a valid total aroma"],
+  },
+  totalSparkling: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+    validate: [validator.isNumeric, "Please provide a valid total sparkling"],
+  },
 });
 
 const User = mongoose.model("User", userSchema);

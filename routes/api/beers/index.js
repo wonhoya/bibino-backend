@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 const {
-  getBeers,
+  searchBeer,
   getBeer,
   getBeerStats,
   getBeerComments,
@@ -10,11 +10,12 @@ const {
 
 router.route("/scan").post(scanPhoto);
 router.route("/:id").post(getBeer);
+router.route("/search").post(searchBeer);
+
+router.route("/:id").get(getBeer);
 
 router.route("/:id/stats").get(getBeerStats);
 
 router.route("/:id/comments").get(getBeerComments);
-
-router.route("/").get(getBeers);
 
 module.exports = router;
