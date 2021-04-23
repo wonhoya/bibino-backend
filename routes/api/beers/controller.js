@@ -3,6 +3,16 @@ const createError = require("http-errors");
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
 
+const getBeers = async (req, res, next) => {
+  try {
+    const beers = await Beer.find();
+
+    res.json(beers);
+  } catch (err) {
+    next(createError(500, "Internal Server Error"));
+  }
+};
+
 const getBeer = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -10,7 +20,7 @@ const getBeer = async (req, res, next) => {
 
     res.json(beer);
   } catch (err) {
-    next(createError(500, err, "Internal Server Error"));
+    next(createError(500, "Internal Server Error"));
   }
 };
 
@@ -21,7 +31,7 @@ const getBeerStats = async (req, res, next) => {
 
     res.json(stats);
   } catch (err) {
-    next(createError(500, err, "Internal Server Error"));
+    next(createError(500, "Internal Server Error"));
   }
 };
 
@@ -34,11 +44,12 @@ const getBeerComments = async (req, res, next) => {
 
     res.json(comments);
   } catch (err) {
-    next(createError(500, err, "Internal Server Error"));
+    next(createError(500, "Internal Server Error"));
   }
 };
 
 module.exports = {
+  getBeers,
   getBeer,
   getBeerStats,
   getBeerComments,

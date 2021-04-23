@@ -10,8 +10,6 @@ require("./config/aws");
 
 const app = express();
 
-require("./config/database");
-
 const api = require("./routes/api");
 const handleGlobalError = require("./middlewares/handleGlobalError");
 
