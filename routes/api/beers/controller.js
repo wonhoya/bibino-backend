@@ -1,8 +1,8 @@
 const createError = require("http-errors");
-const callGoogleVisionAsync = require("../../../util/callGoogleVisionAsync");
 
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
+const callGoogleVisionAsync = require("../../../util/callGoogleVisionAsync");
 
 const searchBeer = async (req, res, next) => {
   try {
@@ -41,30 +41,26 @@ const scanPhoto = async (req, res, next) => {
       string.toLowerCase().replace(/\s+/g, "")
     );
 
-    const beersInDb = await Beer.find().select("name");
-
     const findBeerInfo = (textsInImage, beerList) => {
       for (const text of textsInImage) {
-        for (const beerName of beerList) {
-          if (beerName.name.toLowerCase().replace(/\s+/g, "") === text) {
-            return beerName._id;
+        for (const beer of beerList) {
+          if (beer.name.toLowerCase().replace(/\s+/g, "") === text) {
+            return beer._id;
           }
         }
       }
     };
 
+    const beersInDb = await Beer.find().select("name");
     const matchBeerId = findBeerInfo(flatBeerTexts, beersInDb);
-    console.log("id is", matchBeerId);
 
     const beerInfo = await Beer.findById(matchBeerId);
-    console.log(beerInfo);
 
     res.json({
       status: beerInfo ? "Analyze Success" : "Analyze Failure",
       payload: beerInfo,
     });
   } catch (error) {
-    console.log("error.message", error);
     next(createError(500, error.message));
   }
 };
