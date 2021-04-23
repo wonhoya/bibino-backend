@@ -8,7 +8,6 @@ admin.initializeApp({
 });
 
 const authenticateUser = async (idToken) => {
-
   const { name, email, picture } = await admin.auth().verifyIdToken(idToken);
 
   return { name, email, picture };
