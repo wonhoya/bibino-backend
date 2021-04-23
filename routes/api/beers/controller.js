@@ -28,15 +28,20 @@ const getBeer = async (req, res, next) => {
 const scanPhoto = async (req, res, next) => {
   try {
     const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
+
+    if (!detectedBeerText.length) {
+      return res.json({
+        status: "Analyze Failure",
+        payload: {},
+      });
+    }
+
     const detectedBeerTexts = detectedBeerText.split("\n");
     const flatBeerTexts = detectedBeerTexts.map((string) =>
       string.toLowerCase().replace(/\s+/g, "")
     );
 
-    console.log("flatBeerTexts:", flatBeerTexts);
-
     const beersInDb = await Beer.find().select("name");
-    console.log("beersInDb", beersInDb);
 
     const findBeerInfo = (textsInImage, beerList) => {
       for (const text of textsInImage) {

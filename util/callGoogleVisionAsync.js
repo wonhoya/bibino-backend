@@ -22,7 +22,16 @@ async function callGoogleVisionAsync(image) {
     body: JSON.stringify(body),
   });
 
+  console.log("google respones");
+
   const parsed = await response.json();
+
+  if (Object.entries(parsed.responses[0]).length === 0) {
+    console.log("empty!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    return [];
+  }
+
+  console.log("parsed", parsed);
   // console.log("Result:", parsed);
   // console.log("Result: responses", parsed.responses);
   // console.log("Result: responses", parsed.responses);
