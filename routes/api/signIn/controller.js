@@ -11,14 +11,17 @@ const signInUser = async (req, res, next) => {
 
   if (authorization?.startsWith("Bearer ")) {
     try {
-      const idToken = getidToken(authorization);
-      const { name, email, picture } = await authenticateUser(idToken);
-      const user = await User.findOneAndUpdate({ email }, { name, email, imagePath: picture }, { upsert: true, lean: true, new: true });
+      const idTokenByGoogle = getidToken(authorization);
+      const { name, email, picture } = await authenticateUser(idTokenByGoogle);
+      const user = await User.findOneAndUpdate(
+        { email },
+        { name, email, imagePath: picture },
+        { upsert: true, lean: true, new: true },
+      );
 
-      const accessToken = jwt.sign(user._id.toString(), process.env.PRIVATE_KEY);
+      const idTokenByBibino = jwt.sign(user._id.toString(), process.env.PRIVATE_KEY);
 
-      return res.json({ user, accessToken });
-
+      res.json({ user, idTokenByBibino });
     } catch (err) {
       next(createError(500, `Can't insert a new User in DB.\nOriginal error message: ${err.message}`));
     }
