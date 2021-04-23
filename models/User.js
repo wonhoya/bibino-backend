@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
     minlength: 2,
   },
   imagePath: {
-    //auth에서 어떤 식으로 던져주는지 확인한 후 validate 넣어야됨
+    required: [true, "Please provide your url"],
+    validate: [validator.isURL, "Please provide a valid url"],
     type: String,
   },
   beers: [
@@ -25,12 +26,9 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Beer",
       },
-      localImagePath: {
-        type: mongoose.Schema.Types.String,
-        validate: [
-          validator.isDataURI,
-          "Please provide a valid local image path",
-        ],
+      myBeerImageURL: {
+        type: String,
+        validate: [validator.isURL, "Please provide a valid url"],
       },
     },
   ],
