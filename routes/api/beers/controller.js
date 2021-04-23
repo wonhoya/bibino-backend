@@ -2,36 +2,34 @@ const createError = require("http-errors");
 
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
+const getEuclideanDistance = require("../../../utils/getEuclideanDistance");
 
 const searchBeer = async (req, res, next) => {
   try {
+    //프론트엔드 보고 마저 짤 예정
     const beers = await Beer.find();
 
     res.json(beers);
   } catch (err) {
-    next(createError(500, "Internal Server Error"));
+    next(createError(500, err));
   }
 };
 
 const getBeer = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const beer = await Beer.findById(id).lean();
+    const beer = await Beer.findById(id).lean({
+      virtuals: [
+        "averageRating",
+        "averageBody",
+        "averageAroma",
+        "averageSparkling",
+      ],
+    });
 
     res.json(beer);
   } catch (err) {
-    next(createError(500, "Internal Server Error"));
-  }
-};
-
-const getBeerStats = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const stats = await Review.getStats(id, false);
-
-    res.json(stats);
-  } catch (err) {
-    next(createError(500, "Internal Server Error"));
+    next(createError(500, err));
   }
 };
 
@@ -44,13 +42,43 @@ const getBeerComments = async (req, res, next) => {
 
     res.json(comments);
   } catch (err) {
-    next(createError(500, "Internal Server Error"));
+    next(createError(500, err));
+  }
+};
+
+const getBeerRecommendations = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const beers = await Beer.find().lean({
+      virtuals: [
+        "averageRating",
+        "averageBody",
+        "averageAroma",
+        "averageSparkling",
+      ],
+    });
+    const baseBeerIndex = beers.findIndex((beer) => beer._id.toString() === id);
+
+    beers.forEach((beer) => {
+      beer.distance = getEuclideanDistance(
+        beers[baseBeerIndex].averageBody,
+        beers[baseBeerIndex].averageAroma,
+        beers[baseBeerIndex].averageSparkling,
+        beer.averageBody,
+        beer.averageAroma,
+        beer.averageSparkling
+      );
+    });
+
+    res.json(beers.slice(1, 6));
+  } catch (err) {
+    next(createError(500, err));
   }
 };
 
 module.exports = {
   searchBeer,
   getBeer,
-  getBeerStats,
   getBeerComments,
+  getBeerRecommendations,
 };

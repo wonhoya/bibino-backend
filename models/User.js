@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
+const mongooseLeanVirtuals = require("mongoose-lean-virtuals");
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -21,7 +23,7 @@ const userSchema = new mongoose.Schema({
   },
   beers: [
     {
-      detail: {
+      beer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Beer",
         required: [true, "Please provide the beer mongoId"],
@@ -63,6 +65,70 @@ const userSchema = new mongoose.Schema({
     min: [0, "review counts should me bigger than 0"],
     validate: [validator.isNumeric, "Please provide a valid total sparkling"],
   },
+});
+
+userSchema.virtual("averageRating").get(function () {
+  if (this.reviewCounts === 0) {
+    return 0;
+  }
+
+  return this.totalRating / this.reviewCounts;
+});
+
+userSchema.virtual("averageBody").get(function () {
+  if (this.reviewCounts === 0) {
+    return 0;
+  }
+
+  return this.totalBody / this.reviewCounts;
+});
+
+userSchema.virtual("averageAroma").get(function () {
+  if (this.reviewCounts === 0) {
+    return 0;
+  }
+
+  return this.totalAroma / this.reviewCounts;
+});
+
+userSchema.virtual("averageSparkling").get(function () {
+  if (this.reviewCounts === 0) {
+    return 0;
+  }
+
+  return this.totalSparkling / this.reviewCounts;
+});
+
+userSchema.plugin(mongooseLeanVirtuals);
+
+userSchema.pre(/^find/, function (next) {
+  this.select("-__v");
+  next();
+});
+
+userSchema.post(/^find/, function (docs, next) {
+  if (!docs) {
+    return next();
+  }
+
+  if (!Array.isArray(docs)) {
+    delete docs.reviewCounts;
+    delete docs.totalRating;
+    delete docs.totalBody;
+    delete docs.totalAroma;
+    delete docs.totalSparkling;
+    return next();
+  }
+
+  docs.forEach((doc) => {
+    delete doc.reviewCounts;
+    delete doc.totalRating;
+    delete doc.totalBody;
+    delete doc.totalAroma;
+    delete doc.totalSparkling;
+  });
+
+  return next();
 });
 
 const User = mongoose.model("User", userSchema);

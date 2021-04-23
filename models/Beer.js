@@ -1,100 +1,86 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const mongooseLeanVirtuals = require("mongoose-lean-virtuals");
 
-const beerSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, "Please tell us beer name!"],
-      validate: [validator.isAlphanumeric, "Please provide a valid name"],
-    },
-    imagePath: {
-      type: String,
-      required: [true, "Please provide your url"],
-      validate: [validator.isURL, "Please provide a valid url"],
-    },
-    description: {
-      type: String,
-      required: [true, "Please tell us beer description!"],
-    },
-    reviewCounts: {
-      type: Number,
-      default: 0,
-      min: [0, "review counts should me bigger than 0"],
-      validate: [validator.isInt, "Please provide a valid review counts"],
-    },
-    totalRating: {
-      type: Number,
-      default: 0,
-      min: [0, "review counts should me bigger than 0"],
-      validate: [validator.isNumeric, "Please provide a valid total rating"],
-    },
-    totalBody: {
-      type: Number,
-      default: 0,
-      min: [0, "review counts should me bigger than 0"],
-      validate: [validator.isNumeric, "Please provide a valid total body"],
-    },
-    totalAroma: {
-      type: Number,
-      default: 0,
-      min: [0, "review counts should me bigger than 0"],
-      validate: [validator.isNumeric, "Please provide a valid total aroma"],
-    },
-    totalSparkling: {
-      type: Number,
-      default: 0,
-      min: [0, "review counts should me bigger than 0"],
-      validate: [validator.isNumeric, "Please provide a valid total sparkling"],
-    },
-    recentComments: [
-      {
-        userName: {
-          type: String,
-          validate: [validator.isAlpha, "Please provide a valid user name"],
-        },
-        userImagePath: {
-          type: String,
-          validate: [validator.isURL, "Please provide a valid url"],
-        },
-        comment: {
-          type: String,
-        },
-        rating: {
-          type: Number,
-          validate: [validator.isNumeric, "Please provide a valid rating"],
-        },
-        writtenDate: {
-          type: Date,
-          validate: [validator.isDate, "Please provide a valid written date"],
-        },
-      },
-    ],
+const beerSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Please tell us beer name!"],
+    validate: [validator.isAlphanumeric, "Please provide a valid name"],
   },
-  {
-    toJSON: {
-      virtuals: true,
-    },
-    toObject: {
-      virtuals: true,
-    },
-  }
-);
+  imagePath: {
+    type: String,
+    required: [true, "Please provide your url"],
+    validate: [validator.isURL, "Please provide a valid url"],
+  },
+  description: {
+    type: String,
+    required: [true, "Please tell us beer description!"],
+  },
+  reviewCounts: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+  },
+  totalRating: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+  },
+  totalBody: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+  },
+  totalAroma: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+  },
+  totalSparkling: {
+    type: Number,
+    default: 0,
+    min: [0, "review counts should me bigger than 0"],
+  },
+});
 
 beerSchema.virtual("averageRating").get(function () {
+  if (this.reviewCounts === 0) {
+    return 0;
+  }
+
   return this.totalRating / this.reviewCounts;
 });
 
 beerSchema.virtual("averageBody").get(function () {
+  if (this.reviewCounts === 0) {
+    return 0;
+  }
+
   return this.totalBody / this.reviewCounts;
 });
 
 beerSchema.virtual("averageAroma").get(function () {
+  if (this.reviewCounts === 0) {
+    return 0;
+  }
+
   return this.totalAroma / this.reviewCounts;
 });
 
 beerSchema.virtual("averageSparkling").get(function () {
+  if (this.reviewCounts === 0) {
+    return 0;
+  }
+
   return this.totalSparkling / this.reviewCounts;
+});
+
+beerSchema.plugin(mongooseLeanVirtuals);
+
+beerSchema.pre(/^find/, function (next) {
+  this.select("-__v");
+  next();
 });
 
 beerSchema.post(/^find/, function (docs, next) {
@@ -103,17 +89,22 @@ beerSchema.post(/^find/, function (docs, next) {
   }
 
   if (!Array.isArray(docs)) {
-    docs = docs.select(
-      "-reviewCounts -totalRating -totalBody -totalAroma - totalSparkling"
-    );
+    delete docs.reviewCounts;
+    delete docs.totalRating;
+    delete docs.totalBody;
+    delete docs.totalAroma;
+    delete docs.totalSparkling;
     return next();
   }
 
-  docs = docs.map((doc) => {
-    return doc.select(
-      "-reviewCounts -totalRating -totalBody -totalAroma - totalSparkling"
-    );
+  docs.forEach((doc) => {
+    delete doc.reviewCounts;
+    delete doc.totalRating;
+    delete doc.totalBody;
+    delete doc.totalAroma;
+    delete doc.totalSparkling;
   });
+
   return next();
 });
 
