@@ -14,7 +14,7 @@ const authorizeUser = (req, res, next) => {
     res.locals.userId = userId;
     next();
   } else {
-    next(createError(401, "Unauthorized ID token"));
+    next(createError(401, new Error("Unauthorized ID token")));
   }
 };
 
