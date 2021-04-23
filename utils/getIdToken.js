@@ -1,5 +1,5 @@
 const getidToken = (authorization) => {
-  return authorization.slice(authorization.indexOf(" ") + 1);
+  return authorization.split("Bearer ")[1];
 };
 
 module.exports = getidToken;

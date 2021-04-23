@@ -3,13 +3,13 @@ const jwt = require('jsonwebtoken');
 
 const User = require("../../../models/User");
 
-const getidToken = require("../../../utils/getToken");
+const getidToken = require("../../../utils/getIdToken");
 const authenticateUser = require("../../../config/auth");
 
 const signInUser = async (req, res, next) => {
-  const { authorization } = req.headers;
+  const authorization = req.get("authorization");
 
-  if (authorization.startsWith("Bearer")) {
+  if (authorization?.startsWith("Bearer ")) {
     try {
       const idToken = getidToken(authorization);
       const { name, email, picture } = await authenticateUser(idToken);
