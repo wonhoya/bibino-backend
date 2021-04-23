@@ -25,19 +25,29 @@ const reviewSchema = new mongoose.Schema({
   rating: {
     type: Number,
     default: 3,
-    min: [0.5, "Rating must be above 1.0"],
-    max: [5, "Rating must be below 5.0"],
+    min: [0.5, "Rating must be greater than or equal to 0.5"],
+    max: [5, "Rating must be smaller than or equal to 5.0"],
+    required: [true, "Please provide the rating"],
   },
   body: {
     type: Number,
+    default: 5,
+    min: [0, "Rating must be greater than or equal to 0"],
+    max: [10, "Rating must be smaller than or equal to 10"],
     required: [true, "Please provide the body"],
   },
   aroma: {
     type: Number,
+    default: 5,
+    min: [0, "Rating must be greater than or equal to 0"],
+    max: [10, "Rating must be smaller than or equal to 10"],
     required: [true, "Please provide the aroma"],
   },
   sparkling: {
     type: Number,
+    default: 5,
+    min: [0, "Rating must be greater than or equal to 0"],
+    max: [10, "Rating must be smaller than or equal to 10"],
     required: [true, "Please provide the sparkling"],
   },
 });

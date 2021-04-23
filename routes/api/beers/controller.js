@@ -3,7 +3,7 @@ const createError = require("http-errors");
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
 
-const getBeers = async (req, res, next) => {
+const searchBeer = async (req, res, next) => {
   try {
     const beers = await Beer.find();
 
@@ -49,7 +49,7 @@ const getBeerComments = async (req, res, next) => {
 };
 
 module.exports = {
-  getBeers,
+  searchBeer,
   getBeer,
   getBeerStats,
   getBeerComments,
