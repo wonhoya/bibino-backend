@@ -7,6 +7,10 @@
  */
 const handleGlobalError = (err, req, res) => {
   res.status(err.statusCode || 500);
+  if (process.env.NODE_ENV === "development") {
+    res.json(err);
+  }
+
   res.json(err.message);
 };
 
