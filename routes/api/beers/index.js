@@ -8,7 +8,7 @@ const {
   scanPhoto,
 } = require("./controller");
 
-router.route("/scan").get(scanPhoto);
+router.route("/scan").post(scanPhoto);
 router.route("/:id").post(getBeer);
 
 router.route("/:id/stats").get(getBeerStats);
