@@ -10,7 +10,7 @@ const beerSchema = new mongoose.Schema({
     minlength: 2,
   },
   imagePath: {
-    //image 어떻게 저장할지 구현한 후 validate 넣어야됨
+    //s3 url
     type: String,
   },
   description: {

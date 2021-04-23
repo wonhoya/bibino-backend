@@ -24,7 +24,9 @@ const reviewSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
-    required: [true, "Please provide the rating"],
+    default: 3,
+    min: [0.5, "Rating must be above 1.0"],
+    max: [5, "Rating must be below 5.0"],
   },
   body: {
     type: Number,
@@ -39,6 +41,45 @@ const reviewSchema = new mongoose.Schema({
     required: [true, "Please provide the sparkling"],
   },
 });
+
+reviewSchema.statics.getStats = function (id, isUser) {
+  try {
+    const match = isUser
+      ? { user: mongoose.Types.ObjectId(id) }
+      : { beer: mongoose.Types.ObjectId(id) };
+    const stats = Review.aggregate([
+      { $match: match },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+          averageBody: { $avg: "$body" },
+          averageAroma: { $avg: "$aroma" },
+          averageSparkling: { $avg: "$sparkling" },
+        },
+      },
+    ]);
+
+    return stats;
+  } catch (err) {
+    return err;
+  }
+};
+
+reviewSchema.statics.getComments = function (id, isUser) {
+  try {
+    const match = isUser
+      ? { user: mongoose.Types.ObjectId(id) }
+      : { beer: mongoose.Types.ObjectId(id) };
+    const comments = Review.find(match)
+      .select("user comment rating")
+      .populate("user", "name imagePath");
+
+    return comments;
+  } catch (err) {
+    return err;
+  }
+};
 
 const Review = mongoose.model("Review", reviewSchema);
 

@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
+
 const { databaseURI, databasePassword } = require("./index");
 
-(async () => {
+const connectMongoose = async () => {
   try {
     await mongoose.connect(
       databaseURI.replace("<password>", databasePassword),
@@ -17,4 +18,6 @@ const { databaseURI, databasePassword } = require("./index");
   } catch (error) {
     console.error(`Error on connect to mongodb ${error}`);
   }
-})();
+};
+
+connectMongoose();
