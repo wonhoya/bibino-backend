@@ -2,30 +2,32 @@ const createError = require("http-errors");
 const callGoogleVisionAsync = require("../../../util/callGoogleVisionAsync");
 
 const Beer = require("../../../models/Beer");
-const mockData = require("../../../models/mockDatabase.json");
 
 const getBeer = async (req, res, next) => {
   try {
     const beer = await Beer.create();
     res.json(beer);
   } catch (err) {
-    next(createError(err));
+    next(createError(500, err));
   }
 };
 
 const scanPhoto = async (req, res, next) => {
   try {
-    // console.log(req.body.message);
+    console.log(req.body.message);
 
-    // const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
-    // const detectedBeerTexts = parsedImage.split("\n");
-    // const flatBeerTexts = parsedStrings.map((string) =>
-    //   string.toLowerCase().replace(/\s+/g, "")
-    // );
+    const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
+    const detectedBeerTexts = detectedBeerText.split("\n");
+    const flatBeerTexts = detectedBeerTexts.map((string) =>
+      string.toLowerCase().replace(/\s+/g, "")
+    );
 
-    const flatBeerTexts = ["ef", "ef", "egeh", "obgoldenlager"];
+    console.log("flatBeerTexts:", flatBeerTexts);
+
+    // const flatBeerTexts = ["ef", "ef", "egeh", "obgoldenlager"];
+
     const beersInDb = await Beer.find().select("name");
-    console.log("beers", beersInDb);
+    console.log("beersInDb", beersInDb);
 
     const findBeerInfo = (textsInImage, beerList) => {
       for (const text of textsInImage) {
