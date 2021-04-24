@@ -7,7 +7,7 @@ const cookieParser = require("cookie-parser");
 
 require("./config/database");
 require("./config/aws");
-require("./config/auth.js");
+require("./config/auth");
 
 const app = express();
 
