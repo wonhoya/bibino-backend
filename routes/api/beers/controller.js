@@ -6,9 +6,9 @@ const callGoogleVisionAsync = require("../../../util/callGoogleVisionAsync");
 
 const searchBeer = async (req, res, next) => {
   try {
-    const { searchText } = req.body;
+    const searchText = req.get("search-text");
     const lowerCaseSearchText = searchText.toLowerCase();
-    const beers = await Beer.find({}).lean();
+    const beers = await Beer.find().lean();
     const searchedBeers = beers.filter(({ name }) =>
       name.toLowerCase().includes(lowerCaseSearchText)
     );
