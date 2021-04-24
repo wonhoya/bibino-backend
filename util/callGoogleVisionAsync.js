@@ -1,14 +1,13 @@
 const fetch = require("node-fetch");
+
 const { googleVisionApiUrl } = require("../config");
 
 async function callGoogleVisionAsync(image) {
   const body = {
     requests: [
       {
-        image: {
-          content: image,
-        },
-        features: [{ type: "TEXT_DETECTION", maxResults: 8 }],
+        image: { content: image },
+        features: [{ type: "TEXT_DETECTION", maxResults: 10 }],
       },
     ],
   };
