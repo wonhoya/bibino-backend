@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 require("./config/database");
 require("./config/aws");
+require("./config/auth");
 
 const api = require("./routes/api");
 const handleGlobalError = require("./middlewares/handleGlobalError");
