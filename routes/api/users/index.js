@@ -5,7 +5,7 @@ const authorizeUser = require("../../../middlewares/authorizeUser");
 
 router.route("/sign-in").post(signInUser);
 
-router.all("*", authorizeUser);
+//router.all("*", authorizeUser);
 
 router.route("/:id").get(getUser);
 

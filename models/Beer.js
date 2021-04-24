@@ -64,10 +64,10 @@ beerSchema.virtual("averageSparkling").get(function () {
 
 beerSchema.plugin(mongooseLeanVirtuals);
 
-beerSchema.pre(/^find/, function (next) {
-  this.select("-__v");
-  next();
-});
+// beerSchema.pre(/^find/, function (next) {
+//   this.select("-__v");
+//   next();
+// });
 
 beerSchema.post(/^find/, function (docs, next) {
   if (!docs) {

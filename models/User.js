@@ -86,10 +86,10 @@ userSchema.virtual("averageSparkling").get(function () {
 
 userSchema.plugin(mongooseLeanVirtuals);
 
-userSchema.pre(/^find/, function (next) {
-  this.select("-__v");
-  next();
-});
+// userSchema.pre(/^find/, function (next) {
+//   this.select("-__v");
+//   next();
+// });
 
 userSchema.post(/^find/, function (docs, next) {
   if (!docs) {

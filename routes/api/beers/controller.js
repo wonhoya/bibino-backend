@@ -1,4 +1,16 @@
 const createError = require("http-errors");
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3();
+
+const {
+  BUCKET,
+  USER_BEERS,
+  BEERS,
+  ACL,
+  CONTENT_ENCODING,
+} = require("../../../constants/awsParams");
+const base64 = require("./mock");
+const buffer = new Buffer.from(base64, "base64");
 
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
@@ -35,7 +47,8 @@ const getBeer = async (req, res, next) => {
 
 const scanPhoto = async (req, res, next) => {
   try {
-    const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
+    const { email } = res.locals.user;
+    const detectedBeerText = await callGoogleVisionAsync(base64);
 
     if (!detectedBeerText.length) {
       return res.json({
@@ -59,9 +72,29 @@ const scanPhoto = async (req, res, next) => {
       }
     };
 
-    const beersInDatabase = await Beer.find().select("name");
+    const beersInDatabase = await Beer.find();
     const matchBeerId = findBeerInfo(flatBeerTexts, beersInDatabase);
     const beerInfo = await Beer.findById(matchBeerId);
+
+    if (beerInfo) {
+      const params = {
+        Bucket: `${BUCKET}/${USER_BEERS}/${email}`,
+        Key: new Date().toISOString(),
+        Body: buffer,
+        ACL,
+        ContentEncoding: CONTENT_ENCODING,
+      };
+
+      s3.upload(params, (err, data) => {
+        if (err) {
+          throw new Error("s3 upload failed");
+        }
+
+        if (data) {
+          res.json("Successfully upload files!");
+        }
+      });
+    }
 
     res.json({
       status: beerInfo ? "Analyze Success" : "Analyze Failure",
