@@ -2,16 +2,14 @@ const jwt = require("jsonwebtoken");
 const createError = require("http-errors");
 
 const getIdToken = require("../utils/getIdToken");
+const { bibinoPrivateKey } = require("../config");
 
 const authorizeUser = (req, res, next) => {
   const authorization = req.get("authorization");
-  console.log("Hello");
 
   if (authorization?.startsWith("Bearer ")) {
     const idToken = getIdToken(authorization);
-
-    const userId = jwt.verify(idToken, process.env.PRIVATE_KEY);
-
+    const userId = jwt.verify(idToken, bibinoPrivateKey);
     res.locals.userId = userId;
     next();
   } else {

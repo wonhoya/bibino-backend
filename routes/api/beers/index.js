@@ -5,8 +5,11 @@ const {
   getBeer,
   getBeerStats,
   getBeerComments,
+  scanPhoto,
 } = require("./controller");
 
+router.route("/scan").post(scanPhoto);
+router.route("/:id").post(getBeer);
 router.route("/search").post(searchBeer);
 
 router.route("/:id").get(getBeer);
