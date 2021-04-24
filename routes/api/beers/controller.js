@@ -2,7 +2,10 @@ const createError = require("http-errors");
 
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
-const callGoogleVisionAsync = require("../../../util/callGoogleVisionAsync");
+
+const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
+const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
+const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 
 const searchBeer = async (req, res, next) => {
   try {
@@ -22,7 +25,7 @@ const searchBeer = async (req, res, next) => {
 const getBeer = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const beer = await Beer.findById(id).lean();
+    const beer = await leanQueryByOptions(Beer.findById(id));
 
     res.json(beer);
   } catch (err) {
@@ -56,28 +59,16 @@ const scanPhoto = async (req, res, next) => {
       }
     };
 
-    const beersInDb = await Beer.find().select("name");
-    const matchBeerId = findBeerInfo(flatBeerTexts, beersInDb);
-
+    const beersInDatabase = await Beer.find().select("name");
+    const matchBeerId = findBeerInfo(flatBeerTexts, beersInDatabase);
     const beerInfo = await Beer.findById(matchBeerId);
 
     res.json({
       status: beerInfo ? "Analyze Success" : "Analyze Failure",
       payload: beerInfo,
     });
-  } catch (error) {
-    next(createError(500, error.message));
-  }
-};
-
-const getBeerStats = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const stats = await Review.getStats(id, false);
-
-    res.json(stats);
   } catch (err) {
-    next(createError(500, "Internal Server Error"));
+    next(createError(500, err));
   }
 };
 
@@ -90,14 +81,30 @@ const getBeerComments = async (req, res, next) => {
 
     res.json(comments);
   } catch (err) {
-    next(createError(500, "Internal Server Error"));
+    next(createError(500, err));
+  }
+};
+
+const getBeerRecommendations = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const beers = await leanQueryByOptions(Beer.find());
+    const baseBeerIndex = beers.findIndex((beer) => beer._id.toString() === id);
+    const recommendations = sortBeersByEuclideanDistance(
+      beers[baseBeerIndex],
+      beers
+    ).slice(1, 6);
+
+    res.json(recommendations);
+  } catch (err) {
+    next(createError(500, err));
   }
 };
 
 module.exports = {
   searchBeer,
   getBeer,
-  getBeerStats,
   getBeerComments,
+  getBeerRecommendations,
   scanPhoto,
 };

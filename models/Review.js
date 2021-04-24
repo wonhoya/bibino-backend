@@ -52,29 +52,29 @@ const reviewSchema = new mongoose.Schema({
   },
 });
 
-reviewSchema.statics.getStats = function (id, isUser) {
-  try {
-    const match = isUser
-      ? { user: mongoose.Types.ObjectId(id) }
-      : { beer: mongoose.Types.ObjectId(id) };
-    const stats = Review.aggregate([
-      { $match: match },
-      {
-        $group: {
-          _id: null,
-          averageRating: { $avg: "$rating" },
-          averageBody: { $avg: "$body" },
-          averageAroma: { $avg: "$aroma" },
-          averageSparkling: { $avg: "$sparkling" },
-        },
-      },
-    ]);
+// reviewSchema.statics.getStats = function (id, isUser) {
+//   try {
+//     const match = isUser
+//       ? { user: mongoose.Types.ObjectId(id) }
+//       : { beer: mongoose.Types.ObjectId(id) };
+//     const stats = Review.aggregate([
+//       { $match: match },
+//       {
+//         $group: {
+//           _id: null,
+//           averageRating: { $avg: "$rating" },
+//           averageBody: { $avg: "$body" },
+//           averageAroma: { $avg: "$aroma" },
+//           averageSparkling: { $avg: "$sparkling" },
+//         },
+//       },
+//     ]);
 
-    return stats;
-  } catch (err) {
-    return err;
-  }
-};
+//     return stats;
+//   } catch (err) {
+//     return err;
+//   }
+// };
 
 reviewSchema.statics.getComments = function (id, isUser) {
   try {
