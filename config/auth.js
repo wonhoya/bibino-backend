@@ -1,10 +1,11 @@
 const admin = require("firebase-admin");
 
+const { firebaseDatabaseURL } = require("./");
 const serviceAccount = require("../bibino-311310-firebase-adminsdk.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
+  databaseURL: firebaseDatabaseURL,
 });
 
 const authenticateUser = async (idToken) => {
