@@ -2,8 +2,11 @@ const createError = require("http-errors");
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../models/User");
+const Beer = require("../../../models/Beer");
 
+const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const getidToken = require("../../../utils/getIdToken");
+const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 const authenticateUser = require("../../../config/auth");
 const { bibinoPrivateKey } = require("../../../config");
 
@@ -28,7 +31,6 @@ const signInUser = async (req, res, next) => {
         { name: userName, imagePath: userProfileImagePath },
         { upsert: true, lean: true, new: true }
       );
-
       const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
 
       res.json({ user, idTokenByBibino });
@@ -43,11 +45,29 @@ const signInUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id);
+    console.log(id);
+    const user = await leanQueryByOptions(User.findById(id));
+
     res.json(user);
   } catch (err) {
-    next(createError(err));
+    next(createError(500, err));
   }
 };
 
-module.exports = { getUser, signInUser };
+const getUserRecommendations = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await leanQueryByOptions(User.findById(id));
+    const beers = await leanQueryByOptions(Beer.find());
+    const recommendations = sortBeersByEuclideanDistance(user, beers).slice(
+      0,
+      5
+    );
+
+    res.json(recommendations);
+  } catch (err) {
+    next(createError(500, err));
+  }
+};
+
+module.exports = { signInUser, getUser, getUserRecommendations };

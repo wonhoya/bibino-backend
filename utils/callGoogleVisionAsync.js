@@ -1,14 +1,13 @@
 const fetch = require("node-fetch");
+
 const { googleVisionApiUrl } = require("../config");
 
 async function callGoogleVisionAsync(image) {
   const body = {
     requests: [
       {
-        image: {
-          content: image,
-        },
-        features: [{ type: "TEXT_DETECTION", maxResults: 8 }],
+        image: { content: image },
+        features: [{ type: "TEXT_DETECTION", maxResults: 10 }],
       },
     ],
   };
@@ -22,21 +21,11 @@ async function callGoogleVisionAsync(image) {
     body: JSON.stringify(body),
   });
 
-  console.log("google respones");
-
   const parsed = await response.json();
 
   if (Object.entries(parsed.responses[0]).length === 0) {
-    console.log("empty!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     return [];
   }
-
-  console.log("parsed", parsed);
-  // console.log("Result:", parsed);
-  // console.log("Result: responses", parsed.responses);
-  // console.log("Result: responses", parsed.responses);
-  // console.log("Result: textAnno", parsed.responses[0].textAnnotations);
-  // console.log("Result: fullTextAnno", parsed.responses[0].fullTextAnnotation);
 
   return parsed.responses[0].textAnnotations[0].description;
 }
