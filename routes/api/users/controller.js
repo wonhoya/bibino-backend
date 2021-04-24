@@ -31,10 +31,8 @@ const signInUser = async (req, res, next) => {
       );
 
       const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
-      // 맥주 추천으로 가져오는 로직. 그런데 처음 가입했을 때는 유저 선호 점수가 평균 점수라 그냥 랜덤으로 가져오게 해야 하려나...
 
-      const beers = await Beer.find().lean();
-      res.json({ user, idTokenByBibino, beers });
+      res.json({ user, idTokenByBibino });
     } catch (err) {
       next(createError(500, err));
     }
