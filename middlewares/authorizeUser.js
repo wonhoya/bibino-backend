@@ -5,6 +5,7 @@ const getIdToken = require("../utils/getIdToken");
 
 const authorizeUser = (req, res, next) => {
   const authorization = req.get("authorization");
+  console.log("Hello");
 
   if (authorization?.startsWith("Bearer ")) {
     const idToken = getIdToken(authorization);

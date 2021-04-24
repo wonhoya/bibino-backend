@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
   },
   beers: [
     {
-      detail: {
+      beer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Beer",
         required: [true, "Please provide the beer mongoId"],
