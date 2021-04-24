@@ -70,4 +70,32 @@ const getUserRecommendations = async (req, res, next) => {
   }
 };
 
-module.exports = { signInUser, getUser, getUserRecommendations };
+const submitUserReview = async (req, res, next) => {
+  try {
+    console.log("user review", req.body);
+
+    // ==> 프론트에서 받아오는 데이터
+    // user review {
+    //   review: {
+    //     rating: 4,
+    //     aroma: 2.980768918991089,
+    //     body: 2.873931884765625,
+    //     flavor: 8.04487133026123
+    //   },
+    //   comment: '이맥주 괜찮다'
+    // }
+
+    // 유저 코멘트 서버 저장 로직이 여기 들어감
+
+    res.json({ message: "Submit success", payload: {} });
+  } catch (err) {
+    next(createError(500, err));
+  }
+};
+
+module.exports = {
+  signInUser,
+  getUser,
+  getUserRecommendations,
+  submitUserReview,
+};
