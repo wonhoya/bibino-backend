@@ -7,7 +7,7 @@
  */
 const handleGlobalError = (err, req, res) => {
   res.status(err.statusCode || 500);
-  res.json(err.message);
+  res.json({ error: err.message });
 };
 
 module.exports = handleGlobalError;
