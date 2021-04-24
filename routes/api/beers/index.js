@@ -5,7 +5,10 @@ const {
   getBeer,
   getBeerComments,
   getBeerRecommendations,
+  scanPhoto,
 } = require("./controller");
+
+router.route("/scan").post(scanPhoto);
 
 router.route("/search").post(searchBeer);
 

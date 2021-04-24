@@ -5,10 +5,9 @@ const helmet = require("helmet");
 const createError = require("http-errors");
 const cookieParser = require("cookie-parser");
 
+const app = express();
 require("./config/database");
 require("./config/aws");
-
-const app = express();
 
 const api = require("./routes/api");
 const handleGlobalError = require("./middlewares/handleGlobalError");
@@ -17,8 +16,8 @@ if (process.env.NODE_ENV === "development") {
   app.use(logger("dev"));
 }
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(compression());
 app.use(helmet());

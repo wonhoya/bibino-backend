@@ -3,6 +3,7 @@ const createError = require("http-errors");
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
 const getEuclideanDistance = require("../../../utils/getEuclideanDistance");
+const callGoogleVisionAsync = require("../../../util/callGoogleVisionAsync");
 
 const searchBeer = async (req, res, next) => {
   try {
@@ -30,6 +31,46 @@ const getBeer = async (req, res, next) => {
     res.json(beer);
   } catch (err) {
     next(createError(500, err));
+  }
+};
+
+const scanPhoto = async (req, res, next) => {
+  try {
+    const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
+
+    if (!detectedBeerText.length) {
+      return res.json({
+        status: "Analyze Failure",
+        payload: {},
+      });
+    }
+
+    const detectedBeerTexts = detectedBeerText.split("\n");
+    const flatBeerTexts = detectedBeerTexts.map((string) =>
+      string.toLowerCase().replace(/\s+/g, "")
+    );
+
+    const findBeerInfo = (textsInImage, beerList) => {
+      for (const text of textsInImage) {
+        for (const beer of beerList) {
+          if (beer.name.toLowerCase().replace(/\s+/g, "") === text) {
+            return beer._id;
+          }
+        }
+      }
+    };
+
+    const beersInDatabase = await Beer.find().select("name");
+    const matchBeerId = findBeerInfo(flatBeerTexts, beersInDatabase);
+
+    const beerInfo = await Beer.findById(matchBeerId);
+
+    res.json({
+      status: beerInfo ? "Analyze Success" : "Analyze Failure",
+      payload: beerInfo,
+    });
+  } catch (error) {
+    next(createError(500, error.message));
   }
 };
 
@@ -81,4 +122,5 @@ module.exports = {
   getBeer,
   getBeerComments,
   getBeerRecommendations,
+  scanPhoto,
 };
