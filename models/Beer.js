@@ -97,25 +97,25 @@ beerSchema.virtual("averageSparkling").get(function () {
   return this.totalSparkling / this.reviewCounts;
 });
 
-beerSchema.post(/^find/, function (docs, next) {
-  if (!docs) {
-    return next();
-  }
+// beerSchema.post(/^find/, function (docs, next) {
+//   if (!docs) {
+//     return next();
+//   }
 
-  if (!Array.isArray(docs)) {
-    docs = docs.select(
-      "-reviewCounts -totalRating -totalBody -totalAroma - totalSparkling"
-    );
-    return next();
-  }
+//   if (!Array.isArray(docs)) {
+//     docs = docs.select(
+//       "-reviewCounts -totalRating -totalBody -totalAroma - totalSparkling"
+//     );
+//     return next();
+//   }
 
-  docs = docs.map((doc) => {
-    return doc.select(
-      "-reviewCounts -totalRating -totalBody -totalAroma - totalSparkling"
-    );
-  });
-  return next();
-});
+//   docs = docs.map((doc) => {
+//     return doc.select(
+//       "-reviewCounts -totalRating -totalBody -totalAroma - totalSparkling"
+//     );
+//   });
+//   return next();
+// });
 
 const Beer = mongoose.model("Beer", beerSchema);
 
