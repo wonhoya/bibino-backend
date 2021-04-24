@@ -2,8 +2,9 @@ const createError = require("http-errors");
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../models/User");
+const Beer = require("../../../models/Beer");
 
-const getEuclideanDistance = require("../../../utils/getEuclideanDistance");
+const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const getidToken = require("../../../utils/getIdToken");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 const authenticateUser = require("../../../config/auth");
@@ -30,7 +31,6 @@ const signInUser = async (req, res, next) => {
         { name: userName, imagePath: userProfileImagePath },
         { upsert: true, lean: true, new: true }
       );
-
       const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
 
       res.json({ user, idTokenByBibino });
@@ -45,6 +45,7 @@ const signInUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const user = await leanQueryByOptions(User.findById(id));
 
     res.json(user);
@@ -56,23 +57,13 @@ const getUser = async (req, res, next) => {
 const getUserRecommendations = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const beers = await leanQueryByOptions(User.find());
-    const baseBeerIndex = beers.findIndex((beer) => beer._id.toString() === id);
+    const user = await leanQueryByOptions(User.findById(id));
+    const beers = await leanQueryByOptions(Beer.find());
+    const recommendations = sortBeersByEuclideanDistance(user, beers).slice(
+      0,
+      5
+    );
 
-    beers.forEach((beer) => {
-      beer.distance = getEuclideanDistance(
-        beers[baseBeerIndex].averageBody,
-        beers[baseBeerIndex].averageAroma,
-        beers[baseBeerIndex].averageSparkling,
-        beer.averageBody,
-        beer.averageAroma,
-        beer.averageSparkling
-      );
-    });
-
-    const recommendations = beers
-      .sort((a, b) => a.distance - b.distance)
-      .slice(1, 6);
     res.json(recommendations);
   } catch (err) {
     next(createError(500, err));

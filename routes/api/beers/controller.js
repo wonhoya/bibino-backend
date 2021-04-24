@@ -3,7 +3,7 @@ const createError = require("http-errors");
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
 
-const getEuclideanDistance = require("../../../utils/getEuclideanDistance");
+const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 
@@ -61,7 +61,6 @@ const scanPhoto = async (req, res, next) => {
 
     const beersInDatabase = await Beer.find().select("name");
     const matchBeerId = findBeerInfo(flatBeerTexts, beersInDatabase);
-
     const beerInfo = await Beer.findById(matchBeerId);
 
     res.json({
@@ -91,21 +90,11 @@ const getBeerRecommendations = async (req, res, next) => {
     const { id } = req.params;
     const beers = await leanQueryByOptions(Beer.find());
     const baseBeerIndex = beers.findIndex((beer) => beer._id.toString() === id);
+    const recommendations = sortBeersByEuclideanDistance(
+      beers[baseBeerIndex],
+      beers
+    ).slice(1, 6);
 
-    beers.forEach((beer) => {
-      beer.distance = getEuclideanDistance(
-        beers[baseBeerIndex].averageBody,
-        beers[baseBeerIndex].averageAroma,
-        beers[baseBeerIndex].averageSparkling,
-        beer.averageBody,
-        beer.averageAroma,
-        beer.averageSparkling
-      );
-    });
-
-    const recommendations = beers
-      .sort((a, b) => a.distance - b.distance)
-      .slice(1, 6);
     res.json(recommendations);
   } catch (err) {
     next(createError(500, err));
