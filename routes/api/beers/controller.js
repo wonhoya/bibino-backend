@@ -2,7 +2,7 @@ const createError = require("http-errors");
 
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
-const callGoogleVisionAsync = require("../../../util/callGoogleVisionAsync");
+const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
 
 const searchBeer = async (req, res, next) => {
   try {

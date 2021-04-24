@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const authorizeUser = require("../../../middlewares/authorizeUser");
 
 const {
   searchBeer,
@@ -8,6 +9,7 @@ const {
   scanPhoto,
 } = require("./controller");
 
+router.route("*").all(authorizeUser);
 router.route("/scan").post(scanPhoto);
 router.route("/:id").post(getBeer);
 router.route("/search").get(searchBeer);

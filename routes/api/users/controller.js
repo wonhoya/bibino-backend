@@ -28,8 +28,13 @@ const signInUser = async (req, res, next) => {
         { name: userName, imagePath: userProfileImagePath },
         { upsert: true, lean: true, new: true }
       );
-
-      const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
+      const tokenMaterials = {
+        userId: user._id,
+        name: user.name,
+        imagePath: user.imagePath,
+      };
+      const idTokenByBibino = jwt.sign(tokenMaterials, bibinoPrivateKey);
+      console.log(jwt.verify(idTokenByBibino, bibinoPrivateKey));
 
       res.json({ user, idTokenByBibino });
     } catch (err) {
