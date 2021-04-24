@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const mongooseLeanVirtuals = require("mongoose-lean-virtuals");
 
+const getAverage = require("../utils/getAverage");
+
 const beerSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -45,35 +47,19 @@ const beerSchema = new mongoose.Schema({
 });
 
 beerSchema.virtual("averageRating").get(function () {
-  if (this.reviewCounts === 0) {
-    return 0;
-  }
-
-  return this.totalRating / this.reviewCounts;
+  return getAverage(this.totalRating, this.reviewCounts);
 });
 
 beerSchema.virtual("averageBody").get(function () {
-  if (this.reviewCounts === 0) {
-    return 0;
-  }
-
-  return this.totalBody / this.reviewCounts;
+  return getAverage(this.totalBody, this.reviewCounts);
 });
 
 beerSchema.virtual("averageAroma").get(function () {
-  if (this.reviewCounts === 0) {
-    return 0;
-  }
-
-  return this.totalAroma / this.reviewCounts;
+  return getAverage(this.totalAroma, this.reviewCounts);
 });
 
 beerSchema.virtual("averageSparkling").get(function () {
-  if (this.reviewCounts === 0) {
-    return 0;
-  }
-
-  return this.totalSparkling / this.reviewCounts;
+  return getAverage(this.totalSparkling, this.reviewCounts);
 });
 
 beerSchema.plugin(mongooseLeanVirtuals);

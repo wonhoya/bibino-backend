@@ -5,6 +5,7 @@ const Review = require("../../../models/Review");
 
 const getEuclideanDistance = require("../../../utils/getEuclideanDistance");
 const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
+const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 
 const searchBeer = async (req, res, next) => {
   try {
@@ -24,14 +25,7 @@ const searchBeer = async (req, res, next) => {
 const getBeer = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const beer = await Beer.findById(id).lean({
-      virtuals: [
-        "averageRating",
-        "averageBody",
-        "averageAroma",
-        "averageSparkling",
-      ],
-    });
+    const beer = await leanQueryByOptions(Beer.findById(id));
 
     res.json(beer);
   } catch (err) {
@@ -74,8 +68,8 @@ const scanPhoto = async (req, res, next) => {
       status: beerInfo ? "Analyze Success" : "Analyze Failure",
       payload: beerInfo,
     });
-  } catch (error) {
-    next(createError(500, error.message));
+  } catch (err) {
+    next(createError(500, err));
   }
 };
 
@@ -95,14 +89,7 @@ const getBeerComments = async (req, res, next) => {
 const getBeerRecommendations = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const beers = await Beer.find().lean({
-      virtuals: [
-        "averageRating",
-        "averageBody",
-        "averageAroma",
-        "averageSparkling",
-      ],
-    });
+    const beers = await leanQueryByOptions(Beer.find());
     const baseBeerIndex = beers.findIndex((beer) => beer._id.toString() === id);
 
     beers.forEach((beer) => {

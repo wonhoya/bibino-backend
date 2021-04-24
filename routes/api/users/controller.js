@@ -5,6 +5,7 @@ const User = require("../../../models/User");
 
 const getEuclideanDistance = require("../../../utils/getEuclideanDistance");
 const getidToken = require("../../../utils/getIdToken");
+const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 const authenticateUser = require("../../../config/auth");
 const { bibinoPrivateKey } = require("../../../config");
 
@@ -44,24 +45,18 @@ const signInUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id);
+    const user = await leanQueryByOptions(User.findById(id));
+
     res.json(user);
   } catch (err) {
-    next(createError(err));
+    next(createError(500, err));
   }
 };
 
 const getUserRecommendations = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const beers = await User.find().lean({
-      virtuals: [
-        "averageRating",
-        "averageBody",
-        "averageAroma",
-        "averageSparkling",
-      ],
-    });
+    const beers = await leanQueryByOptions(User.find());
     const baseBeerIndex = beers.findIndex((beer) => beer._id.toString() === id);
 
     beers.forEach((beer) => {
