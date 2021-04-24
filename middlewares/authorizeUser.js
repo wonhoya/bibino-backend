@@ -9,8 +9,8 @@ const authorizeUser = (req, res, next) => {
 
   if (authorization?.startsWith("Bearer ")) {
     const idToken = getIdToken(authorization);
-    const userId = jwt.verify(idToken, bibinoPrivateKey);
-    res.locals.userId = userId;
+    const user = jwt.verify(idToken, bibinoPrivateKey);
+    res.locals.user = user;
     next();
   } else {
     next(createError(401, new Error("Unauthorized ID token")));
