@@ -2,8 +2,9 @@ const createError = require("http-errors");
 
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
+
 const getEuclideanDistance = require("../../../utils/getEuclideanDistance");
-const callGoogleVisionAsync = require("../../../util/callGoogleVisionAsync");
+const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
 
 const searchBeer = async (req, res, next) => {
   try {
@@ -115,7 +116,10 @@ const getBeerRecommendations = async (req, res, next) => {
       );
     });
 
-    res.json(beers.slice(1, 6));
+    const recommendations = beers
+      .sort((a, b) => a.distance - b.distance)
+      .slice(1, 6);
+    res.json(recommendations);
   } catch (err) {
     next(createError(500, err));
   }

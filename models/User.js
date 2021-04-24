@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-
 const mongooseLeanVirtuals = require("mongoose-lean-virtuals");
 
 const userSchema = new mongoose.Schema({

@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../../../models/User");
 
+const getEuclideanDistance = require("../../../utils/getEuclideanDistance");
 const getidToken = require("../../../utils/getIdToken");
 const authenticateUser = require("../../../config/auth");
 const { bibinoPrivateKey } = require("../../../config");
@@ -50,4 +51,37 @@ const getUser = async (req, res, next) => {
   }
 };
 
-module.exports = { getUser, signInUser };
+const getUserRecommendations = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const beers = await User.find().lean({
+      virtuals: [
+        "averageRating",
+        "averageBody",
+        "averageAroma",
+        "averageSparkling",
+      ],
+    });
+    const baseBeerIndex = beers.findIndex((beer) => beer._id.toString() === id);
+
+    beers.forEach((beer) => {
+      beer.distance = getEuclideanDistance(
+        beers[baseBeerIndex].averageBody,
+        beers[baseBeerIndex].averageAroma,
+        beers[baseBeerIndex].averageSparkling,
+        beer.averageBody,
+        beer.averageAroma,
+        beer.averageSparkling
+      );
+    });
+
+    const recommendations = beers
+      .sort((a, b) => a.distance - b.distance)
+      .slice(1, 6);
+    res.json(recommendations);
+  } catch (err) {
+    next(createError(500, err));
+  }
+};
+
+module.exports = { signInUser, getUser, getUserRecommendations };
