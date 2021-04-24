@@ -10,7 +10,7 @@ const {
 
 router.route("/scan").post(scanPhoto);
 
-router.route("/search").post(searchBeer);
+router.route("/search").get(searchBeer);
 
 router.route("/:id").get(getBeer);
 
