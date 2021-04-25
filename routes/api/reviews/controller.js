@@ -14,20 +14,27 @@ const createReview = async (req, res, next) => {
    */
 
   //밥먹고 와서 할거: 트랜잭션으로 모두 업뎃 or 모두 페일
+  // const userId = res.locals.user._id;
+  // let { beerId } = req.params;
+  // beerId = mongoose.Types.ObjectId(beerId);
+
   const {
-    beerId,
     review: { rating, body, aroma, sparkling },
     comment,
   } = req.body;
 
+  //mockData
+  const userId = mongoose.Types.ObjectId("60841704df5cc79f9a3f7a4d");
+  const beerId = mongoose.Types.ObjectId("60801ed238f2c931eaf6a25d");
+
   try {
     const review = await Review.findOne({
-      user: mongoose.Types.ObjectId("60841704df5cc79f9a3f7a4d"),
-      beer: mongoose.Types.ObjectId("60801ed238f2c931eaf6a259"), //beerId
+      user: userId,
+      beer: beerId,
     });
 
     if (review) {
-      next(createError(421, "Misdirected Request"));
+      return next(createError(421, "Review Already Exist"));
     }
   } catch (err) {
     next(createError(500, err));
@@ -41,11 +48,9 @@ const createReview = async (req, res, next) => {
     await Review.create(
       [
         {
-          user: mongoose.Types.ObjectId("60841704df5cc79f9a3f7a4d"),
-          /** 이거 local에 oid 박아서 할지 아니면 find해서 거기서 oid 가져올지 세팅해야됨 */
-          beer: mongoose.Types.ObjectId("60801ed238f2c931eaf6a259"),
-          /**beer 진짜 데이터 들올땐 이미 oid임  beerId*/
-          writtenDate: new Date().toISOString(),
+          user: userId,
+          beer: beerId,
+          createdAt: new Date().toISOString(),
           comment,
           rating,
           body,
@@ -55,9 +60,9 @@ const createReview = async (req, res, next) => {
       ],
       { session }
     );
-    //id 나중에 res.locals.user로 바껴야댐
+    /** 위에 세팅 다되잇음 id바꿔주기만하면됨*/
     await User.findByIdAndUpdate(
-      mongoose.Types.ObjectId("60841704df5cc79f9a3f7a4d"),
+      userId,
       {
         $inc: {
           reviewCounts: 1,
@@ -67,34 +72,121 @@ const createReview = async (req, res, next) => {
           totalSparkling: sparkling,
         },
       },
-      { new: true, session }
+      { runValidators: true, session }
     );
     await Beer.findByIdAndUpdate(
-      mongoose.Types.ObjectId("60801ed238f2c931eaf6a259"),
+      beerId,
       {
         $inc: {
           reviewCounts: 1,
-          totalRating: "AAAAA",
+          totalRating: rating,
           totalBody: body,
           totalAroma: aroma,
           totalSparkling: sparkling,
         },
       },
-      { new: true, session }
+      { runValidators: true, session }
     );
 
     await session.commitTransaction();
     session.endSession();
-
-    res.json();
+    return res.json({
+      status: "Submit Success",
+      payload: {},
+    });
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
-    console.log(err);
+    next(createError(500, err));
+  }
+};
+
+const getReview = async (req, res, next) => {
+  try {
+    // const userId = res.locals.user._id;
+    // let { beerId } = req.params;
+    // beerId = mongoose.Types.ObjectId(beerId);
+
+    //mockData
+    const userId = mongoose.Types.ObjectId("60841704df5cc79f9a3f7a4d");
+    const beerId = mongoose.Types.ObjectId("60801ed238f2c931eaf6a25d");
+
+    const review = await Review.findOne({ user: userId, beer: beerId }).lean();
+
+    return res.json(review);
+  } catch (err) {
+    next(createError(500, err));
+  }
+};
+
+const updateReview = async (req, res, next) => {
+  // const userId = res.locals.user._id;
+  // let { beerId } = req.params;
+  // beerId = mongoose.Types.ObjectId(beerId);
+
+  const {
+    review: { rating, body, aroma, sparkling },
+    comment,
+  } = req.body;
+
+  //mockData
+  const userId = mongoose.Types.ObjectId("60841704df5cc79f9a3f7a4d");
+  const beerId = mongoose.Types.ObjectId("60801ed238f2c931eaf6a25d");
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const review = await Review.findOneAndUpdate(
+      { user: userId, beer: beerId },
+      { rating, body, aroma, sparkling, comment },
+      {
+        lean: true,
+        runValidators: true,
+        session,
+      }
+    );
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $inc: {
+          totalRating: rating - review.rating,
+          totalBody: body - review.body,
+          totalAroma: aroma - review.aroma,
+          totalSparkling: sparkling - review.sparkling,
+        },
+      },
+      { runValidators: true, session }
+    );
+    await Beer.findByIdAndUpdate(
+      beerId,
+      {
+        $inc: {
+          totalRating: rating - review.rating,
+          totalBody: body - review.body,
+          totalAroma: aroma - review.aroma,
+          totalSparkling: sparkling - review.sparkling,
+        },
+      },
+      { runValidators: true, session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+    return res.json({
+      status: "Submit Success",
+      payload: {},
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
     next(createError(500, err));
   }
 };
 
 module.exports = {
   createReview,
+  getReview,
+  updateReview,
 };

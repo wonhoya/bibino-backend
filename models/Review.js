@@ -14,7 +14,7 @@ const reviewSchema = new mongoose.Schema({
     required: [true, "Please provide the beer mongoId"],
     //validate: [validator.isMongoId, "Please provide a valid beer mongoId"],
   },
-  writtenDate: {
+  createdAt: {
     type: Date,
     required: [true, "Please provide the written date"],
     validate: [validator.isDate, "Please provide a valid written date"],

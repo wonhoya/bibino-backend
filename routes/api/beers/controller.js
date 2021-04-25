@@ -76,7 +76,7 @@ const getBeerComments = async (req, res, next) => {
   try {
     const { beerId } = req.params;
     const comments = await Review.getComments(beerId, false)
-      .sort("writtenDate")
+      .sort("createdAt")
       .lean();
 
     res.json(comments);
