@@ -6,13 +6,13 @@ const reviewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: [true, "Please provide the user mongoId"],
-    validate: [validator.isMongoId, "Please provide a valid user mongoId"],
+    //validate: [validator.isMongoId, "Please provide a valid user mongoId"],
   },
   beer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Beer",
     required: [true, "Please provide the beer mongoId"],
-    validate: [validator.isMongoId, "Please provide a valid beer mongoId"],
+    //validate: [validator.isMongoId, "Please provide a valid beer mongoId"],
   },
   writtenDate: {
     type: Date,
