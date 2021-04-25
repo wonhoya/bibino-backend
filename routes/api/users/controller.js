@@ -31,7 +31,13 @@ const signInUser = async (req, res, next) => {
         { name: userName, imagePath: userProfileImagePath },
         { upsert: true, lean: true, new: true }
       );
-      const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
+
+      const tokenMaterials = {
+        userId: user._id.toString(),
+        name: user.name,
+        imagePath: user.imagePath,
+      };
+      const idTokenByBibino = jwt.sign(tokenMaterials, bibinoPrivateKey);
 
       res.json({ user, idTokenByBibino });
     } catch (err) {
@@ -45,7 +51,6 @@ const signInUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const user = await leanQueryByOptions(User.findById(id));
 
     res.json(user);
