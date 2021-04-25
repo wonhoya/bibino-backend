@@ -50,8 +50,8 @@ const signInUser = async (req, res, next) => {
 
 const getUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const user = await leanQueryByOptions(User.findById(id));
+    const { userId } = req.params;
+    const user = await leanQueryByOptions(User.findById(userId));
 
     res.json(user);
   } catch (err) {
@@ -61,8 +61,8 @@ const getUser = async (req, res, next) => {
 
 const getUserRecommendations = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const user = await leanQueryByOptions(User.findById(id));
+    const { userId } = req.params;
+    const user = await leanQueryByOptions(User.findById(userId));
     const beers = await leanQueryByOptions(Beer.find());
     const recommendations = sortBeersByEuclideanDistance(user, beers).slice(
       0,
