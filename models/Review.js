@@ -6,13 +6,11 @@ const reviewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: [true, "Please provide the user mongoId"],
-    //validate: [validator.isMongoId, "Please provide a valid user mongoId"],
   },
   beer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Beer",
     required: [true, "Please provide the beer mongoId"],
-    //validate: [validator.isMongoId, "Please provide a valid beer mongoId"],
   },
   createdAt: {
     type: Date,
@@ -57,11 +55,9 @@ reviewSchema.statics.getComments = function (id, isUser) {
     const match = isUser
       ? { user: mongoose.Types.ObjectId(id) }
       : { beer: mongoose.Types.ObjectId(id) };
-    const comments = Review.find(match)
+    return Review.find(match)
       .select("user comment rating")
       .populate("user", "name imagePath");
-
-    return comments;
   } catch (err) {
     return err;
   }

@@ -31,7 +31,6 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Beer",
         required: [true, "Please provide the beer mongoId"],
-        validate: [validator.isMongoId, "Please provide a valid beer mongoId"],
       },
       myBeerImageURL: {
         type: String,
@@ -88,11 +87,6 @@ userSchema.virtual("averageSparkling").get(function () {
 });
 
 userSchema.plugin(mongooseLeanVirtuals);
-
-userSchema.pre(/^find/, function (next) {
-  this.select("-__v");
-  next();
-});
 
 userSchema.post(/^find/, function (docs, next) {
   if (!docs) {
