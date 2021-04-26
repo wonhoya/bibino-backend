@@ -27,14 +27,24 @@ const signInUser = async (req, res, next) => {
     }
 
     try {
-      const user = await User.findOneAndUpdate(
-        { email: userEmail },
-        {
-          name: userName,
-          imagePath: userProfileImagePath,
-          $push: { uids: uid },
-        },
-        { runValidators: true, upsert: true, lean: true, new: true }
+      const user = await leanQueryByOptions(
+        User.findOneAndUpdate(
+          { email: userEmail },
+          {
+            name: userName,
+            imagePath: userProfileImagePath,
+            $push: { uids: uid },
+            $setOnInsert: {
+              reviewCounts: 0,
+              totalRating: 0,
+              totalBody: 0,
+              totalAroma: 0,
+              totalSparkling: 0,
+              beers: [],
+            },
+          },
+          { runValidators: true, upsert: true, new: true }
+        )
       );
 
       const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
