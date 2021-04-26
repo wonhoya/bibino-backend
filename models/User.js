@@ -44,31 +44,26 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isInt, "Please provide a valid review counts"],
   },
   totalRating: {
     type: Number,
     default: 0,
     min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isNumeric, "Please provide a valid total rating"],
   },
   totalBody: {
     type: Number,
     default: 0,
     min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isNumeric, "Please provide a valid total body"],
   },
   totalAroma: {
     type: Number,
     default: 0,
     min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isNumeric, "Please provide a valid total aroma"],
   },
   totalSparkling: {
     type: Number,
     default: 0,
     min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isNumeric, "Please provide a valid total sparkling"],
   },
 });
 
@@ -96,7 +91,6 @@ userSchema.post(/^find/, function (docs, next) {
   }
 
   if (!Array.isArray(docs)) {
-    delete docs.reviewCounts;
     delete docs.totalRating;
     delete docs.totalBody;
     delete docs.totalAroma;
@@ -105,7 +99,6 @@ userSchema.post(/^find/, function (docs, next) {
   }
 
   docs.forEach((doc) => {
-    delete doc.reviewCounts;
     delete doc.totalRating;
     delete doc.totalBody;
     delete doc.totalAroma;
