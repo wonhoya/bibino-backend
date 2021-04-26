@@ -33,7 +33,7 @@ const signInUser = async (req, res, next) => {
           {
             name: userName,
             imagePath: userProfileImagePath,
-            $push: { uids: uid },
+            $addToSet: { uids: uid },
             $setOnInsert: {
               reviewCounts: 0,
               totalRating: 0,
@@ -46,8 +46,6 @@ const signInUser = async (req, res, next) => {
           { runValidators: true, upsert: true, new: true }
         )
       );
-
-      console.log(user);
 
       const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
 

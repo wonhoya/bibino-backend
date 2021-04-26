@@ -112,7 +112,7 @@ const scanPhoto = async (req, res, next) => {
 
     res.json({
       status: beerInfo ? "Analyze Success" : "Analyze Failure",
-      payload: beerInfo,
+      payload: beerInfo?._id,
     });
   } catch (err) {
     next(createError(500, err));
