@@ -4,14 +4,12 @@ const s3 = new AWS.S3();
 
 const {
   BUCKET,
-  USER_BEERS,
-  BEERS,
   ACL,
   CONTENT_ENCODING,
+  CONTENT_TYPE,
 } = require("../../../constants/awsParams");
-const base64 = require("./mock");
-const buffer = new Buffer.from(base64, "base64");
 
+const User = require("../../../models/User");
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
 
@@ -47,8 +45,9 @@ const getBeer = async (req, res, next) => {
 
 const scanPhoto = async (req, res, next) => {
   try {
-    const { email } = res.locals.user;
-    const detectedBeerText = await callGoogleVisionAsync(base64);
+    const { id } = res.locals.user;
+    const buffer = new Buffer.from(req.body.base64, "base64");
+    const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
 
     if (!detectedBeerText.length) {
       return res.json({
@@ -65,7 +64,7 @@ const scanPhoto = async (req, res, next) => {
     const findBeerInfo = (textsInImage, beerList) => {
       for (const text of textsInImage) {
         for (const beer of beerList) {
-          if (beer.name.toLowerCase().replace(/\s+/g, "") === text) {
+          if (beer.name.toLowerCase().replace(/\s+/g, "").includes(text)) {
             return beer._id;
           }
         }
@@ -78,20 +77,34 @@ const scanPhoto = async (req, res, next) => {
 
     if (beerInfo) {
       const params = {
-        Bucket: `${BUCKET}/${USER_BEERS}/${email}`,
-        Key: new Date().toISOString(),
+        Bucket: `${BUCKET}`,
+        Key: `${id}/${new Date().toISOString()}`,
         Body: buffer,
         ACL,
         ContentEncoding: CONTENT_ENCODING,
+        ContentType: CONTENT_TYPE,
       };
 
-      s3.upload(params, (err, data) => {
+      s3.upload(params, async (err, data) => {
         if (err) {
           throw new Error("s3 upload failed");
         }
 
-        if (data) {
-          res.json("Successfully upload files!");
+        try {
+          await User.findByIdAndUpdate(
+            id,
+            {
+              $push: {
+                beers: {
+                  beer: beerInfo._id,
+                  myBeerImageURL: data.Location,
+                },
+              },
+            },
+            { runValidators: true }
+          );
+        } catch (err) {
+          next(createError(500, err));
         }
       });
     }
