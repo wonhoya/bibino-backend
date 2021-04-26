@@ -21,23 +21,24 @@ const validateReview = (data) => {
     .and("review", "comment")
     .length(2);
 
-  return schema.validate(data, { abortEarly: false });
+  return schema.validate(data);
 };
 
 const validateQuery = (query) => {
   const schema = Joi.object().keys({
-    text: Joi.string(),
+    text: Joi.string().allow("").trim().max(50).truncate(),
   });
 
   return schema.validate(query);
 };
 
-const validateSearch = (data) => {
-  const schema = Joi.object().keys({
-    comment: Joi.string().required(),
-  });
-
-  return schema.validate(data, { abortEarly: false });
+const validateBase64 = (base64) => {
+  const schema = Joi.string().base64().required();
+  return schema.validate(base64);
 };
 
-module.exports = { validateReview, validateQuery, validateSearch };
+module.exports = {
+  validateReview,
+  validateQuery,
+  validateBase64,
+};

@@ -16,6 +16,7 @@ const Review = require("../../../models/Review");
 const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
+const { validateBase64 } = require("../../../utils/validationHandler");
 
 const searchBeer = async (req, res, next) => {
   try {
@@ -53,6 +54,12 @@ const getBeer = async (req, res, next) => {
 
 const scanPhoto = async (req, res, next) => {
   try {
+    const { error } = validateBase64(req.body.base64);
+
+    if (error) {
+      next(createError(400, error));
+    }
+
     const { id } = res.locals.user;
     const buffer = new Buffer.from(req.body.base64, "base64");
     const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
