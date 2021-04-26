@@ -1,7 +1,11 @@
 const BUCKET = "bibino";
-const USER_BEERS = "user-beers";
-const BEERS = "beers";
 const ACL = "public-read";
 const CONTENT_ENCODING = "base64";
+const CONTENT_TYPE = "image/jpg";
 
-module.exports = { BUCKET, USER_BEERS, BEERS, ACL, CONTENT_ENCODING };
+module.exports = {
+  BUCKET,
+  ACL,
+  CONTENT_ENCODING,
+  CONTENT_TYPE,
+};

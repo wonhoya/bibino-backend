@@ -1,5 +1,15 @@
 const createError = require("http-errors");
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3();
 
+const {
+  BUCKET,
+  ACL,
+  CONTENT_ENCODING,
+  CONTENT_TYPE,
+} = require("../../../constants/awsParams");
+
+const User = require("../../../models/User");
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
 
@@ -35,6 +45,8 @@ const getBeer = async (req, res, next) => {
 
 const scanPhoto = async (req, res, next) => {
   try {
+    const { id } = res.locals.user;
+    const buffer = new Buffer.from(req.body.base64, "base64");
     const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
 
     if (!detectedBeerText.length) {
@@ -52,16 +64,50 @@ const scanPhoto = async (req, res, next) => {
     const findBeerInfo = (textsInImage, beerList) => {
       for (const text of textsInImage) {
         for (const beer of beerList) {
-          if (beer.name.toLowerCase().replace(/\s+/g, "") === text) {
+          if (beer.name.toLowerCase().replace(/\s+/g, "").includes(text)) {
             return beer._id;
           }
         }
       }
     };
 
-    const beersInDatabase = await Beer.find().select("name");
+    const beersInDatabase = await Beer.find();
     const matchBeerId = findBeerInfo(flatBeerTexts, beersInDatabase);
     const beerInfo = await Beer.findById(matchBeerId);
+
+    if (beerInfo) {
+      const params = {
+        Bucket: `${BUCKET}`,
+        Key: `${id}/${new Date().toISOString()}`,
+        Body: buffer,
+        ACL,
+        ContentEncoding: CONTENT_ENCODING,
+        ContentType: CONTENT_TYPE,
+      };
+
+      s3.upload(params, async (err, data) => {
+        if (err) {
+          throw new Error("s3 upload failed");
+        }
+
+        try {
+          await User.findByIdAndUpdate(
+            id,
+            {
+              $push: {
+                beers: {
+                  beer: beerInfo._id,
+                  myBeerImageURL: data.Location,
+                },
+              },
+            },
+            { runValidators: true }
+          );
+        } catch (err) {
+          next(createError(500, err));
+        }
+      });
+    }
 
     res.json({
       status: beerInfo ? "Analyze Success" : "Analyze Failure",
