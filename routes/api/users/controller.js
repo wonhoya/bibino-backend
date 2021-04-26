@@ -78,17 +78,4 @@ const getUserRecommendations = async (req, res, next) => {
   }
 };
 
-const resignUser = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const uids = await User.findById(id, "uids").lean();
-    debugger;
-    const deletResults = await resignFirebaseUser(uids);
-    await User.findByIdAndDelete(id);
-    res.json({ message: "success" });
-  } catch (err) {
-    next(createError(500, err));
-  }
-};
-
 module.exports = { signInUser, getUser, getUserRecommendations, resignUser };
