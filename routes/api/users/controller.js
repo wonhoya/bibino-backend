@@ -7,12 +7,15 @@ const Beer = require("../../../models/Beer");
 const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const getidToken = require("../../../utils/getIdToken");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
-const authenticateUser = require("../../../config/auth");
+const {
+  authenticateUser,
+  resignFirebaseUser,
+} = require("../../../config/auth");
 const { bibinoPrivateKey } = require("../../../config");
 
 const signInUser = async (req, res, next) => {
   const authorization = req.get("authorization");
-  let userName, userEmail, userProfileImagePath;
+  let userName, userEmail, userProfileImagePath, uid;
 
   if (authorization?.startsWith("Bearer ")) {
     try {
@@ -21,6 +24,7 @@ const signInUser = async (req, res, next) => {
       userName = userData.name;
       userEmail = userData.email;
       userProfileImagePath = userData.picture;
+      uid = userData.uid;
     } catch (err) {
       return next(createError(401, err));
     }
@@ -28,16 +32,15 @@ const signInUser = async (req, res, next) => {
     try {
       const user = await User.findOneAndUpdate(
         { email: userEmail },
-        { name: userName, imagePath: userProfileImagePath },
+        {
+          name: userName,
+          imagePath: userProfileImagePath,
+          $push: { uids: uid },
+        },
         { upsert: true, lean: true, new: true }
       );
 
-      const tokenMaterials = {
-        userId: user._id.toString(),
-        name: user.name,
-        imagePath: user.imagePath,
-      };
-      const idTokenByBibino = jwt.sign(tokenMaterials, bibinoPrivateKey);
+      const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
 
       res.json({ user, idTokenByBibino });
     } catch (err) {
@@ -75,4 +78,17 @@ const getUserRecommendations = async (req, res, next) => {
   }
 };
 
-module.exports = { signInUser, getUser, getUserRecommendations };
+const resignUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const uids = await User.findById(id, "uids").lean();
+    debugger;
+    const deletResults = await resignFirebaseUser(uids);
+    await User.findByIdAndDelete(id);
+    res.json({ message: "success" });
+  } catch (err) {
+    next(createError(500, err));
+  }
+};
+
+module.exports = { signInUser, getUser, getUserRecommendations, resignUser };

@@ -9,9 +9,17 @@ admin.initializeApp({
 });
 
 const authenticateUser = async (idToken) => {
-  const { name, email, picture } = await admin.auth().verifyIdToken(idToken);
+  const { name, email, picture, uid } = await admin
+    .auth()
+    .verifyIdToken(idToken);
 
-  return { name, email, picture };
+  return { name, email, picture, uid };
 };
 
-module.exports = authenticateUser;
+const resignFirebaseUser = async (uids) => {
+  const deleteUsers = uids.map((uid) => admin.auth().deleteUser(uid));
+  return Promise.all(deleteUsers);
+};
+
+exports.authenticateUser = authenticateUser;
+exports.resignFirebaseUser = resignFirebaseUser;
