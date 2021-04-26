@@ -14,9 +14,6 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please tell us your name!"],
-    validate: [validator.isAlpha, "Please provide a valid name"],
-    maxlength: 15,
-    minlength: 2,
   },
   uids: [
     {
@@ -42,36 +39,36 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
-  reviewCounts: {
-    type: Number,
-    default: 0,
-    min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isInt, "Please provide a valid review counts"],
-  },
-  totalRating: {
-    type: Number,
-    default: 0,
-    min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isNumeric, "Please provide a valid total rating"],
-  },
-  totalBody: {
-    type: Number,
-    default: 0,
-    min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isNumeric, "Please provide a valid total body"],
-  },
-  totalAroma: {
-    type: Number,
-    default: 0,
-    min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isNumeric, "Please provide a valid total aroma"],
-  },
-  totalSparkling: {
-    type: Number,
-    default: 0,
-    min: [0, "review counts should me bigger than 0"],
-    validate: [validator.isNumeric, "Please provide a valid total sparkling"],
-  },
+  // reviewCounts: {
+  //   type: Number,
+  //   default: 0,
+  //   min: [0, "review counts should me bigger than 0"],
+  //   validate: [validator.isInt, "Please provide a valid review counts"],
+  // },
+  // totalRating: {
+  //   type: Number,
+  //   default: 0,
+  //   min: [0, "review counts should me bigger than 0"],
+  //   validate: [validator.isNumeric, "Please provide a valid total rating"],
+  // },
+  // totalBody: {
+  //   type: Number,
+  //   default: 0,
+  //   min: [0, "review counts should me bigger than 0"],
+  //   validate: [validator.isNumeric, "Please provide a valid total body"],
+  // },
+  // totalAroma: {
+  //   type: Number,
+  //   default: 0,
+  //   min: [0, "review counts should me bigger than 0"],
+  //   validate: [validator.isNumeric, "Please provide a valid total aroma"],
+  // },
+  // totalSparkling: {
+  //   type: Number,
+  //   default: 0,
+  //   min: [0, "review counts should me bigger than 0"],
+  //   validate: [validator.isNumeric, "Please provide a valid total sparkling"],
+  // },
 });
 
 userSchema.virtual("averageRating").get(function () {

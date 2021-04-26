@@ -33,6 +33,13 @@ const signInUser = async (req, res, next) => {
           name: userName,
           imagePath: userProfileImagePath,
           $push: { uids: uid },
+          $setOnInsert: {
+            reviewCounts: 0,
+            totalRating: 0,
+            totalBody: 0,
+            totalAroma: 0,
+            totalSparkling: 0,
+          },
         },
         { runValidators: true, upsert: true, lean: true, new: true }
       );

@@ -24,6 +24,7 @@ const searchBeer = async (req, res, next) => {
 
 const getBeer = async (req, res, next) => {
   try {
+    console.log("req.params", req.params);
     const { beerId } = req.params;
     const beer = await leanQueryByOptions(Beer.findById(beerId));
 
@@ -45,6 +46,9 @@ const scanPhoto = async (req, res, next) => {
     }
 
     const detectedBeerTexts = detectedBeerText.split("\n");
+
+    console.log("detectedBeerTexts", detectedBeerTexts);
+
     const flatBeerTexts = detectedBeerTexts.map((string) =>
       string.toLowerCase().replace(/\s+/g, "")
     );

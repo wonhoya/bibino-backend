@@ -8,7 +8,6 @@ const beerSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please tell us beer name!"],
-    validate: [validator.isAlphanumeric, "Please provide a valid name"],
   },
   imagePath: {
     type: String,
@@ -64,10 +63,10 @@ beerSchema.virtual("averageSparkling").get(function () {
 
 beerSchema.plugin(mongooseLeanVirtuals);
 
-beerSchema.pre(/^find/, function (next) {
-  this.select("-__v");
-  next();
-});
+// beerSchema.pre(/^find/, function (next) {
+//   this.select("-__v");
+//   next();
+// });
 
 beerSchema.post(/^find/, function (docs, next) {
   if (!docs) {
