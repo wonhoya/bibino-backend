@@ -57,6 +57,7 @@ const scanPhoto = async (req, res, next) => {
     }
 
     const detectedBeerTexts = detectedBeerText.split("\n");
+
     const flatBeerTexts = detectedBeerTexts.map((string) =>
       string.toLowerCase().replace(/\s+/g, "")
     );
