@@ -6,15 +6,15 @@ const reviewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: [true, "Please provide the user mongoId"],
-    validate: [validator.isMongoId, "Please provide a valid user mongoId"],
+    //validate: [validator.isMongoId, "Please provide a valid user mongoId"],
   },
   beer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Beer",
     required: [true, "Please provide the beer mongoId"],
-    validate: [validator.isMongoId, "Please provide a valid beer mongoId"],
+    //validate: [validator.isMongoId, "Please provide a valid beer mongoId"],
   },
-  writtenDate: {
+  createdAt: {
     type: Date,
     required: [true, "Please provide the written date"],
     validate: [validator.isDate, "Please provide a valid written date"],
@@ -51,30 +51,6 @@ const reviewSchema = new mongoose.Schema({
     required: [true, "Please provide the sparkling"],
   },
 });
-
-// reviewSchema.statics.getStats = function (id, isUser) {
-//   try {
-//     const match = isUser
-//       ? { user: mongoose.Types.ObjectId(id) }
-//       : { beer: mongoose.Types.ObjectId(id) };
-//     const stats = Review.aggregate([
-//       { $match: match },
-//       {
-//         $group: {
-//           _id: null,
-//           averageRating: { $avg: "$rating" },
-//           averageBody: { $avg: "$body" },
-//           averageAroma: { $avg: "$aroma" },
-//           averageSparkling: { $avg: "$sparkling" },
-//         },
-//       },
-//     ]);
-
-//     return stats;
-//   } catch (err) {
-//     return err;
-//   }
-// };
 
 reviewSchema.statics.getComments = function (id, isUser) {
   try {

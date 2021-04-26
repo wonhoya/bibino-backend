@@ -7,15 +7,18 @@ const {
   getBeerRecommendations,
   scanPhoto,
 } = require("./controller");
+const reviewsRouter = require("../reviews");
+
+router.use("/:beerId/reviews", reviewsRouter);
 
 router.route("/scan").post(scanPhoto);
 
 router.route("/search").get(searchBeer);
 
-router.route("/:id").get(getBeer);
+router.route("/:beerId").get(getBeer);
 
-router.route("/:id/comments").get(getBeerComments);
+router.route("/:beerId/comments").get(getBeerComments);
 
-router.route("/:id/recommendations").get(getBeerRecommendations);
+router.route("/:beerId/recommendations").get(getBeerRecommendations);
 
 module.exports = router;
