@@ -7,10 +7,7 @@ const Beer = require("../../../models/Beer");
 const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const getidToken = require("../../../utils/getIdToken");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
-const {
-  authenticateUser,
-  resignFirebaseUser,
-} = require("../../../config/auth");
+const { authenticateUser } = require("../../../config/auth");
 const { bibinoPrivateKey } = require("../../../config");
 
 const signInUser = async (req, res, next) => {
@@ -78,4 +75,4 @@ const getUserRecommendations = async (req, res, next) => {
   }
 };
 
-module.exports = { signInUser, getUser, getUserRecommendations, resignUser };
+module.exports = { signInUser, getUser, getUserRecommendations };

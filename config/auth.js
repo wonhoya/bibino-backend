@@ -16,10 +16,4 @@ const authenticateUser = async (idToken) => {
   return { name, email, picture, uid };
 };
 
-const resignFirebaseUser = async (uids) => {
-  const deleteUsers = uids.map((uid) => admin.auth().deleteUser(uid));
-  return Promise.all(deleteUsers);
-};
-
 exports.authenticateUser = authenticateUser;
-exports.resignFirebaseUser = resignFirebaseUser;
