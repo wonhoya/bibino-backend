@@ -18,6 +18,12 @@ const userSchema = new mongoose.Schema({
     maxlength: 15,
     minlength: 2,
   },
+  uids: [
+    {
+      type: String,
+      validate: [validator.isAlphanumeric, "Please provide a valid uid"],
+    },
+  ],
   imagePath: {
     type: String,
     validate: [validator.isURL, "Please provide a valid url"],
