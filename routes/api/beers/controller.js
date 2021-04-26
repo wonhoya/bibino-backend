@@ -1,6 +1,7 @@
 const createError = require("http-errors");
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
+const Fuse = require("fuse.js");
 
 const {
   BUCKET,
@@ -19,14 +20,18 @@ const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 
 const searchBeer = async (req, res, next) => {
   try {
-    const searchText = req.get("search-text");
-    const lowerCaseSearchText = searchText.toLowerCase();
-    const beers = await Beer.find().lean();
-    const searchedBeers = beers.filter(({ name }) =>
-      name.toLowerCase().includes(lowerCaseSearchText)
-    );
+    const text = req.query.text;
 
-    res.json(searchedBeers);
+    if (text.replace(/\s/g, "").length === 0) {
+      return res.json([]);
+    }
+
+    const beers = await Beer.find().lean();
+    const fuse = new Fuse(beers, { keys: ["name"] });
+    let searched = fuse.search(text).map((el) => el.item);
+    searched = searched.length > 5 ? searched.slice(0, 5) : searched;
+
+    res.json(searched);
   } catch (err) {
     next(createError(500, err));
   }
