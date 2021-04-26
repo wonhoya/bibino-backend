@@ -34,7 +34,7 @@ const signInUser = async (req, res, next) => {
           imagePath: userProfileImagePath,
           $push: { uids: uid },
         },
-        { upsert: true, lean: true, new: true }
+        { runValidators: true, upsert: true, lean: true, new: true }
       );
 
       const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
