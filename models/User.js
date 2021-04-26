@@ -104,7 +104,6 @@ userSchema.post(/^find/, function (docs, next) {
   }
 
   docs.forEach((doc) => {
-    delete doc.reviewCounts;
     delete doc.totalRating;
     delete doc.totalBody;
     delete doc.totalAroma;
