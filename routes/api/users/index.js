@@ -7,8 +7,8 @@ router.route("/sign-in").post(signInUser);
 
 //router.all("*", authorizeUser);
 
-router.route("/:id").get(getUser);
+router.route("/:userId").get(getUser);
 
-router.route("/:id/recommendations").get(getUserRecommendations);
+router.route("/:userId/recommendations").get(getUserRecommendations);
 
 module.exports = router;

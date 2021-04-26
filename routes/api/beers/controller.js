@@ -36,8 +36,8 @@ const searchBeer = async (req, res, next) => {
 
 const getBeer = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const beer = await leanQueryByOptions(Beer.findById(id));
+    const { beerId } = req.params;
+    const beer = await leanQueryByOptions(Beer.findById(beerId));
 
     res.json(beer);
   } catch (err) {
@@ -107,9 +107,9 @@ const scanPhoto = async (req, res, next) => {
 
 const getBeerComments = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const comments = await Review.getComments(id, false)
-      .sort("writtenDate")
+    const { beerId } = req.params;
+    const comments = await Review.getComments(beerId, false)
+      .sort("createdAt")
       .lean();
 
     res.json(comments);
@@ -120,9 +120,11 @@ const getBeerComments = async (req, res, next) => {
 
 const getBeerRecommendations = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { beerId } = req.params;
     const beers = await leanQueryByOptions(Beer.find());
-    const baseBeerIndex = beers.findIndex((beer) => beer._id.toString() === id);
+    const baseBeerIndex = beers.findIndex(
+      (beer) => beer._id.toString() === beerId
+    );
     const recommendations = sortBeersByEuclideanDistance(
       beers[baseBeerIndex],
       beers
