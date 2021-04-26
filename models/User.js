@@ -96,7 +96,6 @@ userSchema.post(/^find/, function (docs, next) {
   }
 
   if (!Array.isArray(docs)) {
-    delete docs.reviewCounts;
     delete docs.totalRating;
     delete docs.totalBody;
     delete docs.totalAroma;
