@@ -1,6 +1,7 @@
 const createError = require("http-errors");
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
+const Fuse = require("fuse.js");
 
 const {
   BUCKET,
@@ -26,16 +27,12 @@ const searchBeer = async (req, res, next) => {
       return res.json([]);
     }
 
-    const beers = await Beer.find(
-      { $text: { $search: text } },
-      { score: { $meta: "textScore" } }
-    )
-      .sort({ score: { $meta: "textScore" } })
-      .limit(10);
+    const beers = await Beer.find().lean();
+    const fuse = new Fuse(beers, { keys: ["name"] });
+    let searched = fuse.search(text).map((el) => el.item);
+    searched = searched.length > 5 ? searched.slice(0, 5) : searched;
 
-    console.log(beers);
-
-    res.json(beers);
+    res.json(searched);
   } catch (err) {
     next(createError(500, err));
   }
@@ -72,24 +69,29 @@ const scanPhoto = async (req, res, next) => {
     }
 
     const detectedBeerTexts = detectedBeerText.split("\n");
+    const flatBeerTexts = detectedBeerTexts
+      .map((string) => {
+        const beerText = string.toLowerCase().replace(/\s+/g, "");
 
-    const flatBeerTexts = detectedBeerTexts.map((string) =>
-      string.toLowerCase().replace(/\s+/g, "")
-    );
-
-    const findBeerInfo = (textsInImage, beerList) => {
-      for (const text of textsInImage) {
-        for (const beer of beerList) {
-          if (beer.name.toLowerCase().replace(/\s+/g, "").includes(text)) {
-            return beer._id;
-          }
+        if (beerText.length > 2) {
+          return beerText;
         }
-      }
-    };
+      })
+      .filter(Boolean);
 
-    const beersInDatabase = await Beer.find();
-    const matchBeerId = findBeerInfo(flatBeerTexts, beersInDatabase);
-    const beerInfo = await Beer.findById(matchBeerId);
+    if (!flatBeerTexts.length) {
+      return res.json({
+        status: "Analyze Failure",
+        payload: {},
+      });
+    }
+
+    const beers = await Beer.find().select("name");
+    const beerInfo = beers.find((beer) => {
+      return flatBeerTexts.some((text) => {
+        return beer.name.toLowerCase().startsWith(text);
+      });
+    });
 
     if (beerInfo) {
       const params = {
