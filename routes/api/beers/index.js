@@ -1,15 +1,15 @@
 const router = require("express").Router();
 
 const {
+  getBeerRanking,
   searchBeer,
   getBeer,
   getBeerComments,
   getBeerRecommendations,
   scanPhoto,
 } = require("./controller");
-const reviewsRouter = require("../reviews");
 
-router.use("/:beerId/reviews", reviewsRouter);
+router.route("/rankings").get(getBeerRanking);
 
 router.route("/scan").post(scanPhoto);
 
