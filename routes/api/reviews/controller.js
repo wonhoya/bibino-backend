@@ -6,7 +6,7 @@ const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
 
 const createReview = async (req, res, next) => {
-  const userId = res.locals.user._id;
+  const userId = res.locals.user.id;
 
   const {
     beerId,
@@ -109,7 +109,7 @@ const getReview = async (req, res, next) => {
 const updateReview = async (req, res, next) => {
   let { reviewId } = req.params;
   reviewId = mongoose.Types.ObjectId(reviewId);
-  const userId = res.locals.user._id;
+  const userId = res.locals.user.id;
 
   const {
     beerId,
