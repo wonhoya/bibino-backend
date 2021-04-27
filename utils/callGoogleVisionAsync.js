@@ -7,7 +7,7 @@ async function callGoogleVisionAsync(image) {
     requests: [
       {
         image: { content: image },
-        features: [{ type: "TEXT_DETECTION", maxResults: 10 }],
+        features: [{ type: "DOCUMENT_TEXT_DETECTION", maxResults: 10 }],
       },
     ],
   };
