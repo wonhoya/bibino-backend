@@ -8,7 +8,7 @@ const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclidea
 const getidToken = require("../../../utils/getIdToken");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 const { authenticateUser } = require("../../../config/auth");
-const { bibinoPrivateKey } = require("../../../config");
+const { myAppPrivateKey } = require("../../../config");
 
 const signInUser = async (req, res, next) => {
   const authorization = req.get("authorization");
@@ -47,9 +47,9 @@ const signInUser = async (req, res, next) => {
         )
       );
 
-      const idTokenByBibino = jwt.sign(user._id.toString(), bibinoPrivateKey);
+      const myAppIdToken = jwt.sign(user._id.toString(), myAppPrivateKey);
 
-      res.json({ user, idTokenByBibino });
+      res.json({ user, myAppIdToken });
     } catch (err) {
       next(createError(500, err));
     }
