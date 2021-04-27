@@ -19,6 +19,19 @@ const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 const { validateBase64 } = require("../../../utils/validationHandler");
 
+const getBeerRanking = async (req, res, next) => {
+  try {
+    const limitBy = req.query.limit ?? 10;
+    const sortBy = "-rating";
+
+    const beerRanking = await Beer.find().sort(sortBy).limit(limitBy);
+
+    res.json(beerRanking);
+  } catch (err) {
+    next(createError(500, err));
+  }
+};
+
 const searchBeer = async (req, res, next) => {
   try {
     const text = req.query.text;
@@ -169,6 +182,7 @@ const getBeerRecommendations = async (req, res, next) => {
 
 module.exports = {
   searchBeer,
+  getBeerRanking,
   getBeer,
   getBeerComments,
   getBeerRecommendations,
