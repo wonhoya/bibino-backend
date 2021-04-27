@@ -7,6 +7,7 @@ const Beer = require("../../../models/Beer");
 const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const getidToken = require("../../../utils/getIdToken");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
+const { validateToken } = require("../../../utils/validationHandler");
 const { authenticateUser } = require("../../../config/auth");
 const { appPrivateKey } = require("../../../config");
 
@@ -17,6 +18,12 @@ const signInUser = async (req, res, next) => {
   if (authorization?.startsWith("Bearer ")) {
     try {
       const idTokenByGoogle = getidToken(authorization);
+      const { error } = validateToken(idTokenByGoogle);
+
+      if (error) {
+        next(createError(401, error));
+      }
+
       const userData = await authenticateUser(idTokenByGoogle);
       userName = userData.name;
       userEmail = userData.email;

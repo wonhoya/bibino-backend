@@ -3,6 +3,7 @@ const createError = require("http-errors");
 
 const User = require("../models/User");
 const getIdToken = require("../utils/getIdToken");
+const { validateToken } = require("../utils/validationHandler");
 const { appPrivateKey } = require("../config");
 
 const authorizeUser = async (req, res, next) => {
@@ -11,6 +12,12 @@ const authorizeUser = async (req, res, next) => {
   if (authorization?.startsWith("Bearer ")) {
     try {
       const idToken = getIdToken(authorization);
+      const { error } = validateToken(idToken);
+
+      if (error) {
+        next(createError(401, error));
+      }
+
       const userId = jwt.verify(idToken, appPrivateKey);
       const { _id, name, imagePath } = await User.findById(userId).lean();
 

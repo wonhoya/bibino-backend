@@ -32,6 +32,13 @@ const validateQuery = (query) => {
   return schema.validate(query);
 };
 
+const validateToken = (token) => {
+  const schema = Joi.string()
+    .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
+    .required();
+  return schema.validate(token);
+};
+
 const validateBase64 = (base64) => {
   const schema = Joi.string().base64().required();
   return schema.validate(base64);
@@ -40,5 +47,6 @@ const validateBase64 = (base64) => {
 module.exports = {
   validateReview,
   validateQuery,
+  validateToken,
   validateBase64,
 };
