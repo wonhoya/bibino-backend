@@ -18,6 +18,19 @@ const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclidea
 const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 
+const getTopBeers = async (req, res, next) => {
+  try {
+    const { limitBy } = req.query;
+    const sortBy = "-rating";
+
+    const topBeers = await Beer.find().sort(sortBy).limit(limitBy);
+
+    res.json(topBeers);
+  } catch (err) {
+    next(createError(500, err));
+  }
+};
+
 const searchBeer = async (req, res, next) => {
   try {
     const text = req.query.text;
@@ -162,6 +175,7 @@ const getBeerRecommendations = async (req, res, next) => {
 
 module.exports = {
   searchBeer,
+  getTopBeers,
   getBeer,
   getBeerComments,
   getBeerRecommendations,
