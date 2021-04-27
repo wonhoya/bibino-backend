@@ -22,7 +22,7 @@ const {
   validateBase64,
 } = require("../../../utils/validationHandler");
 
-const getBeerRanking = async (req, res, next) => {
+const getBeerRankings = async (req, res, next) => {
   const { error } = validateQuery(req.query);
 
   if (error) {
@@ -30,12 +30,20 @@ const getBeerRanking = async (req, res, next) => {
   }
 
   const limitBy = req.query.limit ?? 10;
-  const sortBy = "-rating -reviewCounts";
 
   try {
-    const beerRanking = await Beer.find().sort(sortBy).limit(limitBy);
+    const beerRanking = await leanQueryByOptions(Beer.find());
+    beerRanking.sort((a, b) => {
+      let difference = b.averageRating - a.averageRating;
 
-    return res.json(beerRanking);
+      if (difference === 0) {
+        difference = b.reviewCounts - a.reviewCounts;
+      }
+
+      return difference;
+    });
+
+    return res.json(beerRanking.slice(0, limitBy));
   } catch (err) {
     next(createError(500, err));
   }
@@ -197,7 +205,7 @@ const getBeerRecommendations = async (req, res, next) => {
 
 module.exports = {
   searchBeer,
-  getBeerRanking,
+  getBeerRankings,
   getBeer,
   getBeerComments,
   getBeerRecommendations,

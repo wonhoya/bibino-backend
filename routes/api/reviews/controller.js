@@ -36,59 +36,52 @@ const createReview = async (req, res, next) => {
   }
 
   const session = await mongoose.startSession();
-  const promises = [];
 
   try {
     session.startTransaction();
-    promises.push(
-      Review.create(
-        [
-          {
-            user: userId,
-            beer: beerId,
-            createdAt: new Date().toISOString(),
-            comment,
-            rating,
-            body,
-            aroma,
-            sparkling,
-          },
-        ],
-        { session }
-      )
-    );
-    promises.push(
-      User.findByIdAndUpdate(
-        userId,
+
+    await Review.create(
+      [
         {
-          $inc: {
-            reviewCounts: 1,
-            totalRating: rating,
-            totalBody: body,
-            totalAroma: aroma,
-            totalSparkling: sparkling,
-          },
+          user: userId,
+          beer: beerId,
+          createdAt: new Date().toISOString(),
+          comment,
+          rating,
+          body,
+          aroma,
+          sparkling,
         },
-        { runValidators: true, session }
-      )
+      ],
+      { session }
     );
-    promises.push(
-      Beer.findByIdAndUpdate(
-        beerId,
-        {
-          $inc: {
-            reviewCounts: 1,
-            totalRating: rating,
-            totalBody: body,
-            totalAroma: aroma,
-            totalSparkling: sparkling,
-          },
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $inc: {
+          reviewCounts: 1,
+          totalRating: rating,
+          totalBody: body,
+          totalAroma: aroma,
+          totalSparkling: sparkling,
         },
-        { runValidators: true, session }
-      )
+      },
+      { runValidators: true, session }
+    );
+    await Beer.findByIdAndUpdate(
+      beerId,
+      {
+        $inc: {
+          reviewCounts: 1,
+          totalRating: rating,
+          totalBody: body,
+          totalAroma: aroma,
+          totalSparkling: sparkling,
+        },
+      },
+      { runValidators: true, session }
     );
 
-    await Promise.all(promises);
     await session.commitTransaction();
     session.endSession();
 
@@ -132,7 +125,6 @@ const updateReview = async (req, res, next) => {
   } = req.body;
 
   const session = await mongoose.startSession();
-  const promises = [];
 
   try {
     session.startTransaction();
@@ -146,36 +138,32 @@ const updateReview = async (req, res, next) => {
         session,
       }
     );
-    promises.push(
-      User.findByIdAndUpdate(
-        userId,
-        {
-          $inc: {
-            totalRating: rating - review.rating,
-            totalBody: body - review.body,
-            totalAroma: aroma - review.aroma,
-            totalSparkling: sparkling - review.sparkling,
-          },
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $inc: {
+          totalRating: rating - review.rating,
+          totalBody: body - review.body,
+          totalAroma: aroma - review.aroma,
+          totalSparkling: sparkling - review.sparkling,
         },
-        { runValidators: true, session }
-      )
-    );
-    promises.push(
-      Beer.findByIdAndUpdate(
-        beerId,
-        {
-          $inc: {
-            totalRating: rating - review.rating,
-            totalBody: body - review.body,
-            totalAroma: aroma - review.aroma,
-            totalSparkling: sparkling - review.sparkling,
-          },
-        },
-        { runValidators: true, session }
-      )
+      },
+      { runValidators: true, session }
     );
 
-    await Promise.all(promises);
+    await Beer.findByIdAndUpdate(
+      beerId,
+      {
+        $inc: {
+          totalRating: rating - review.rating,
+          totalBody: body - review.body,
+          totalAroma: aroma - review.aroma,
+          totalSparkling: sparkling - review.sparkling,
+        },
+      },
+      { runValidators: true, session }
+    );
+
     await session.commitTransaction();
     session.endSession();
 
