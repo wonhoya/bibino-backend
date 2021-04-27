@@ -4,6 +4,6 @@ const { createReview, getReview, updateReview } = require("./controller");
 
 router.route("/new").post(createReview);
 
-router.route("/single").get(getReview).patch(updateReview);
+router.route("/:reviewId").get(getReview).put(updateReview);
 
 module.exports = router;

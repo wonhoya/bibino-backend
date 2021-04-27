@@ -7,9 +7,6 @@ const {
   getBeerRecommendations,
   scanPhoto,
 } = require("./controller");
-const reviewsRouter = require("../reviews");
-
-router.use("/:beerId/reviews", reviewsRouter);
 
 router.route("/scan").post(scanPhoto);
 

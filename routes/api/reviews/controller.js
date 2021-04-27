@@ -7,10 +7,9 @@ const Review = require("../../../models/Review");
 
 const createReview = async (req, res, next) => {
   const userId = res.locals.user._id;
-  let { beerId } = req.params;
-  beerId = mongoose.Types.ObjectId(beerId);
 
   const {
+    beerId,
     review: { rating, body, aroma, sparkling },
     comment,
   } = req.body;
@@ -97,11 +96,9 @@ const createReview = async (req, res, next) => {
 
 const getReview = async (req, res, next) => {
   try {
-    const userId = res.locals.user._id;
-    let { beerId } = req.params;
-    beerId = mongoose.Types.ObjectId(beerId);
-
-    const review = await Review.findOne({ user: userId, beer: beerId }).lean();
+    let { reviewId } = req.params;
+    reviewId = mongoose.Types.ObjectId(reviewId);
+    const review = await Review.findById(reviewId).lean();
 
     return res.json(review);
   } catch (err) {
@@ -110,11 +107,12 @@ const getReview = async (req, res, next) => {
 };
 
 const updateReview = async (req, res, next) => {
+  let { reviewId } = req.params;
+  reviewId = mongoose.Types.ObjectId(reviewId);
   const userId = res.locals.user._id;
-  let { beerId } = req.params;
-  beerId = mongoose.Types.ObjectId(beerId);
 
   const {
+    beerId,
     review: { rating, body, aroma, sparkling },
     comment,
   } = req.body;
@@ -125,9 +123,9 @@ const updateReview = async (req, res, next) => {
   try {
     session.startTransaction();
 
-    const review = await Review.findOneAndUpdate(
-      { user: userId, beer: beerId },
-      { rating, body, aroma, sparkling, comment },
+    const review = await Review.findByIdAndUpdate(
+      reviewId,
+      { beer: beerId, user: userId, rating, body, aroma, sparkling, comment },
       {
         lean: true,
         runValidators: true,
