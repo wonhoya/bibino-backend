@@ -5,7 +5,15 @@ const User = require("../../../models/User");
 const Beer = require("../../../models/Beer");
 const Review = require("../../../models/Review");
 
+const { validateReview } = require("../../../utils/validationHandler");
+
 const createReview = async (req, res, next) => {
+  const { error } = validateReview(req.body);
+
+  if (error) {
+    return next(createError(400, error));
+  }
+
   const userId = res.locals.user.id;
 
   const {
@@ -83,6 +91,7 @@ const createReview = async (req, res, next) => {
     await Promise.all(promises);
     await session.commitTransaction();
     session.endSession();
+
     return res.json({
       status: "Submit Success",
       payload: {},
@@ -107,10 +116,15 @@ const getReview = async (req, res, next) => {
 };
 
 const updateReview = async (req, res, next) => {
+  const { error } = validateReview(req.body);
+
+  if (error) {
+    return next(createError(400, error));
+  }
+
   let { reviewId } = req.params;
   reviewId = mongoose.Types.ObjectId(reviewId);
   const userId = res.locals.user.id;
-
   const {
     beerId,
     review: { rating, body, aroma, sparkling },
@@ -164,6 +178,7 @@ const updateReview = async (req, res, next) => {
     await Promise.all(promises);
     await session.commitTransaction();
     session.endSession();
+
     return res.json({
       status: "Submit Success",
       payload: {},

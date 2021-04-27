@@ -17,35 +17,50 @@ const Review = require("../../../models/Review");
 const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
-const { validateBase64 } = require("../../../utils/validationHandler");
+const {
+  validateQuery,
+  validateBase64,
+} = require("../../../utils/validationHandler");
 
 const getBeerRanking = async (req, res, next) => {
-  try {
-    const limitBy = req.query.limit ?? 10;
-    const sortBy = "-rating";
+  const { error } = validateQuery(req.query);
 
+  if (error) {
+    return next(createError(404, error));
+  }
+
+  const limitBy = req.query.limit ?? 10;
+  const sortBy = "-rating -reviewCounts";
+
+  try {
     const beerRanking = await Beer.find().sort(sortBy).limit(limitBy);
 
-    res.json(beerRanking);
+    return res.json(beerRanking);
   } catch (err) {
     next(createError(500, err));
   }
 };
 
 const searchBeer = async (req, res, next) => {
+  const { error } = validateQuery(req.query);
+
+  if (error) {
+    return next(createError(404, error));
+  }
+
+  const text = req.query.text;
+
+  if (text.replace(/\s/g, "").length === 0) {
+    return res.json([]);
+  }
+
   try {
-    const text = req.query.text;
-
-    if (text.replace(/\s/g, "").length === 0) {
-      return res.json([]);
-    }
-
     const beers = await Beer.find().lean();
     const fuse = new Fuse(beers, { keys: ["name"] });
     let searched = fuse.search(text).map((el) => el.item);
     searched = searched.length > 5 ? searched.slice(0, 5) : searched;
 
-    res.json(searched);
+    return res.json(searched);
   } catch (err) {
     next(createError(500, err));
   }
@@ -56,20 +71,20 @@ const getBeer = async (req, res, next) => {
     const { beerId } = req.params;
     const beer = await leanQueryByOptions(Beer.findById(beerId));
 
-    res.json(beer);
+    return res.json(beer);
   } catch (err) {
     next(createError(500, err));
   }
 };
 
 const scanPhoto = async (req, res, next) => {
+  const { error } = validateBase64(req.body.base64);
+
+  if (error) {
+    return next(createError(400, error));
+  }
+
   try {
-    const { error } = validateBase64(req.body.base64);
-
-    if (error) {
-      next(createError(400, error));
-    }
-
     const { id } = res.locals.user;
     const buffer = new Buffer.from(req.body.base64, "base64");
     const detectedBeerText = await callGoogleVisionAsync(req.body.base64);
@@ -140,7 +155,7 @@ const scanPhoto = async (req, res, next) => {
       });
     }
 
-    res.json({
+    return res.json({
       status: beerInfo ? "Analyze Success" : "Analyze Failure",
       payload: beerInfo?._id,
     });
@@ -156,7 +171,7 @@ const getBeerComments = async (req, res, next) => {
       .sort("createdAt")
       .lean();
 
-    res.json(comments);
+    return res.json(comments);
   } catch (err) {
     next(createError(500, err));
   }
@@ -174,7 +189,7 @@ const getBeerRecommendations = async (req, res, next) => {
       beers
     ).slice(1, 6);
 
-    res.json(recommendations);
+    return res.json(recommendations);
   } catch (err) {
     next(createError(500, err));
   }

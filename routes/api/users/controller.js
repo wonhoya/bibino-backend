@@ -7,6 +7,7 @@ const Beer = require("../../../models/Beer");
 const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const getidToken = require("../../../utils/getIdToken");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
+const { validateToken } = require("../../../utils/validationHandler");
 const { authenticateUser } = require("../../../config/auth");
 const { appPrivateKey } = require("../../../config");
 
@@ -17,6 +18,12 @@ const signInUser = async (req, res, next) => {
   if (authorization?.startsWith("Bearer ")) {
     try {
       const idTokenByGoogle = getidToken(authorization);
+      const { error } = validateToken(idTokenByGoogle);
+
+      if (error) {
+        return next(createError(401, error));
+      }
+
       const userData = await authenticateUser(idTokenByGoogle);
       userName = userData.name;
       userEmail = userData.email;
@@ -49,12 +56,12 @@ const signInUser = async (req, res, next) => {
 
       const appIdToken = jwt.sign(user._id.toString(), appPrivateKey);
 
-      res.json({ user, appIdToken });
+      return res.json({ user, appIdToken });
     } catch (err) {
       next(createError(500, err));
     }
   } else {
-    next(createError(401));
+    return next(createError(401));
   }
 };
 
@@ -63,7 +70,7 @@ const getUser = async (req, res, next) => {
     const { userId } = req.params;
     const user = await leanQueryByOptions(User.findById(userId));
 
-    res.json(user);
+    return res.json(user);
   } catch (err) {
     next(createError(500, err));
   }
@@ -79,7 +86,7 @@ const getUserRecommendations = async (req, res, next) => {
       5
     );
 
-    res.json(recommendations);
+    return res.json(recommendations);
   } catch (err) {
     next(createError(500, err));
   }
