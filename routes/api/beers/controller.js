@@ -72,6 +72,13 @@ const scanPhoto = async (req, res, next) => {
       })
       .filter(Boolean);
 
+    if (!flatBeerTexts.length) {
+      return res.json({
+        status: "Analyze Failure",
+        payload: {},
+      });
+    }
+
     const beers = await Beer.find().select("name");
     const beerInfo = beers.find((beer) => {
       return flatBeerTexts.some((text) => {
