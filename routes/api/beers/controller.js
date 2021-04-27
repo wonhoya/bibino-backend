@@ -62,24 +62,22 @@ const scanPhoto = async (req, res, next) => {
     }
 
     const detectedBeerTexts = detectedBeerText.split("\n");
+    const flatBeerTexts = detectedBeerTexts
+      .map((string) => {
+        const beerText = string.toLowerCase().replace(/\s+/g, "");
 
-    const flatBeerTexts = detectedBeerTexts.map((string) =>
-      string.toLowerCase().replace(/\s+/g, "")
-    );
-
-    const findBeerInfo = (textsInImage, beerList) => {
-      for (const text of textsInImage) {
-        for (const beer of beerList) {
-          if (beer.name.toLowerCase().replace(/\s+/g, "").includes(text)) {
-            return beer._id;
-          }
+        if (beerText.length > 2) {
+          return beerText;
         }
-      }
-    };
+      })
+      .filter(Boolean);
 
-    const beersInDatabase = await Beer.find();
-    const matchBeerId = findBeerInfo(flatBeerTexts, beersInDatabase);
-    const beerInfo = await Beer.findById(matchBeerId);
+    const beers = await Beer.find().select("name");
+    const beerInfo = beers.find((beer) => {
+      return flatBeerTexts.some((text) => {
+        return beer.name.toLowerCase().startsWith(text);
+      });
+    });
 
     if (beerInfo) {
       const params = {
