@@ -10,10 +10,10 @@ const validateReview = (data) => {
       beerId: Joi.string(),
       review: Joi.object()
         .keys({
-          rating: Joi.number().min(0).max(5).positive().required(),
-          body: Joi.number().min(0).max(10).positive().required(),
-          aroma: Joi.number().min(0).max(10).positive().required(),
-          sparkling: Joi.number().min(0).max(10).positive().required(),
+          rating: Joi.number().min(0).max(5).required(),
+          body: Joi.number().min(0).max(10).required(),
+          aroma: Joi.number().min(0).max(10).required(),
+          sparkling: Joi.number().min(0).max(10).required(),
         })
         .and("rating", "body", "aroma", "sparkling")
         .length(4),
