@@ -27,6 +27,7 @@ const validateReview = (data) => {
 const validateQuery = (query) => {
   const schema = Joi.object().keys({
     text: Joi.string().allow("").trim().max(50).truncate(),
+    limit: Joi.string().allow("").trim().max(50).truncate(),
   });
 
   return schema.validate(query);
