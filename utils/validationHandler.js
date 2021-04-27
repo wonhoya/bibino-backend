@@ -7,6 +7,7 @@ const Joi = require("joi");
 const validateReview = (data) => {
   const schema = Joi.object()
     .keys({
+      beerId: Joi.string(),
       review: Joi.object()
         .keys({
           rating: Joi.number().min(0).max(5).positive().required(),
@@ -18,8 +19,8 @@ const validateReview = (data) => {
         .length(4),
       comment: Joi.string().allow("").max(20).required(),
     })
-    .and("review", "comment")
-    .length(2);
+    .and("beerId", "review", "comment")
+    .length(3);
 
   return schema.validate(data);
 };
