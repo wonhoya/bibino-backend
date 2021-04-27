@@ -17,10 +17,19 @@ const Review = require("../../../models/Review");
 const sortBeersByEuclideanDistance = require("../../../utils/sortBeersByEuclideanDistance");
 const callGoogleVisionAsync = require("../../../utils/callGoogleVisionAsync");
 const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
-const { validateBase64 } = require("../../../utils/validationHandler");
+const {
+  validateQuery,
+  validateBase64,
+} = require("../../../utils/validationHandler");
 
 const searchBeer = async (req, res, next) => {
   try {
+    const { error } = validateQuery(req.query);
+
+    if (error) {
+      return res.json(createError(404, error));
+    }
+
     const text = req.query.text;
 
     if (text.replace(/\s/g, "").length === 0) {
