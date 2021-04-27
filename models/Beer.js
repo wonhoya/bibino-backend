@@ -25,23 +25,23 @@ const beerSchema = new mongoose.Schema({
   },
   totalRating: {
     type: Number,
-    default: 0,
-    min: [0, "review counts should me bigger than 0"],
+    default: 0.0,
+    min: [0.0, "review counts should me bigger than 0"],
   },
   totalBody: {
     type: Number,
-    default: 0,
-    min: [0, "review counts should me bigger than 0"],
+    default: 0.0,
+    min: [0.0, "review counts should me bigger than 0"],
   },
   totalAroma: {
     type: Number,
-    default: 0,
-    min: [0, "review counts should me bigger than 0"],
+    default: 0.0,
+    min: [0.0, "review counts should me bigger than 0"],
   },
   totalSparkling: {
     type: Number,
-    default: 0,
-    min: [0, "review counts should me bigger than 0"],
+    default: 0.0,
+    min: [0.0, "review counts should me bigger than 0"],
   },
 });
 
