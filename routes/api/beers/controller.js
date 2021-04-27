@@ -21,7 +21,7 @@ const leanQueryByOptions = require("../../../utils/leanQueryByOptions");
 const getBeerRanking = async (req, res, next) => {
   try {
     const limitBy = req.query.limit ?? 10;
-    const sortBy = "-rating";
+    const sortBy = "-rating -reviewCounts";
 
     const beerRanking = await Beer.find().sort(sortBy).limit(limitBy);
 
