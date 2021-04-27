@@ -70,12 +70,12 @@ const scanPhoto = async (req, res, next) => {
           return beerText;
         }
       })
-      .filter((el) => !!el);
+      .filter(Boolean);
 
     const beers = await Beer.find().select("name");
-    const beerInfo = beers.find((el) => {
+    const beerInfo = beers.find((beer) => {
       return flatBeerTexts.some((text) => {
-        return el.name.toLowerCase().startsWith(text);
+        return beer.name.toLowerCase().startsWith(text);
       });
     });
 
