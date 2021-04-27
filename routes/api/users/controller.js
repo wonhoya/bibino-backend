@@ -21,7 +21,7 @@ const signInUser = async (req, res, next) => {
       const { error } = validateToken(idTokenByGoogle);
 
       if (error) {
-        next(createError(401, error));
+        return next(createError(401, error));
       }
 
       const userData = await authenticateUser(idTokenByGoogle);
@@ -56,12 +56,12 @@ const signInUser = async (req, res, next) => {
 
       const appIdToken = jwt.sign(user._id.toString(), appPrivateKey);
 
-      res.json({ user, appIdToken });
+      return res.json({ user, appIdToken });
     } catch (err) {
       next(createError(500, err));
     }
   } else {
-    next(createError(401));
+    return next(createError(401));
   }
 };
 
@@ -70,7 +70,7 @@ const getUser = async (req, res, next) => {
     const { userId } = req.params;
     const user = await leanQueryByOptions(User.findById(userId));
 
-    res.json(user);
+    return res.json(user);
   } catch (err) {
     next(createError(500, err));
   }
@@ -86,7 +86,7 @@ const getUserRecommendations = async (req, res, next) => {
       5
     );
 
-    res.json(recommendations);
+    return res.json(recommendations);
   } catch (err) {
     next(createError(500, err));
   }
