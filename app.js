@@ -1,27 +1,36 @@
-
-const createError = require('http-errors');
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const express = require("express");
+const logger = require("morgan");
+const compression = require("compression");
+const helmet = require("helmet");
+const createError = require("http-errors");
+const cookieParser = require("cookie-parser");
 
 const app = express();
+require("./config/database");
+require("./config/aws");
+require("./config/auth");
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+const api = require("./routes/api");
+const handleGlobalError = require("./middlewares/handleGlobalError");
+
+if (process.env.NODE_ENV === "development") {
+  app.use(logger("dev"));
+}
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
+app.use(compression());
+app.use(helmet());
 
-//이건 예제입니다. 삭제 후 진행하시면 됩니다.
-const indexRouter = require('./routes/index');
+app.use("/api", api);
 
-app.use('/', indexRouter);
-
-app.use(function(req, res, next) {
-  next(createError(404));
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  next(createError(404, `Can't find ${req.originalUrl} on this server`));
 });
 
-app.use(function(err, req, res, next) {
-  // error handling
-});
+// error handler
+app.use(handleGlobalError);
 
 module.exports = app;
