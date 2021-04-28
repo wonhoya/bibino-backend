@@ -34,8 +34,5 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
     "prettier": "^2.2.1"
-  },
-  "engines": {
-    "node": ">=14.0.0"
   }
 }
