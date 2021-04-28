@@ -1,8 +1,11 @@
 branch-defaults:
   develop:
-    environment: Bibinoserver-env
+    environment: Bibinoserver-env-2
 environment-defaults:
   Bibinoserver-env:
+    branch: null
+    repository: null
+  Bibinoserver-env-2:
     branch: null
     repository: null
 global:
