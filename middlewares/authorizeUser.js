@@ -15,7 +15,7 @@ const authorizeUser = async (req, res, next) => {
       const { error } = validateToken(idToken);
 
       if (error) {
-        return next(createError(401, error));
+        return next(createError(401, "Validation Error"));
       }
 
       const userId = jwt.verify(idToken, appPrivateKey);
@@ -24,10 +24,10 @@ const authorizeUser = async (req, res, next) => {
       res.locals.user = { id: _id, name, imagePath };
       return next();
     } catch (err) {
-      next(createError(401, new Error("Unauthorized ID token")));
+      next(createError(401, "Unauthorized ID token"));
     }
   } else {
-    return next(createError(401, new Error("Unauthorized ID token")));
+    return next(createError(401, "Unauthorized ID token"));
   }
 };
 

@@ -69,7 +69,6 @@ const getUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const user = await leanQueryByOptions(User.findById(userId));
-
     return res.json(user);
   } catch (err) {
     next(createError(500, err));

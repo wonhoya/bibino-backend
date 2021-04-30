@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 const {
   firebaseDatabaseURL,
   firebaseType,
-  fireebaseProjectId,
+  firebaseProjectId,
   firebasePrivateKeyId,
   firebasePrivateKey,
   firebaseClientEmail,
@@ -16,7 +16,7 @@ const {
 
 const serviceAccount = {
   type: firebaseType,
-  project_id: fireebaseProjectId,
+  project_id: firebaseProjectId,
   private_key_id: firebasePrivateKeyId,
   private_key: firebasePrivateKey,
   client_email: firebaseClientEmail,
