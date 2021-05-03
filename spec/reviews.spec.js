@@ -4,16 +4,11 @@ const jwt = require("jsonwebtoken");
 
 const app = require("../app");
 
-const User = require("../models/User");
-const Beer = require("../models/Beer");
 const Review = require("../models/Review");
 
 const userId = "6087d52adf5cc79f9ab1123b";
 const beerId = "60869bd7080896609959271a";
 const token = jwt.sign(userId, process.env.PRIVATE_KEY);
-const fakeToken = "lmaoplznoerroyeserroryayayaya"
-let user;
-let beer;
 let review;
 
 describe("api/reviews", function() {
