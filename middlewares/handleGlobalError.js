@@ -5,7 +5,7 @@
  * @param {serverresponse} response - response from server
  * @returns {undefined} does not have any return value
  */
-const handleGlobalError = (err, req, res) => {
+const handleGlobalError = (err, req, res, next) => {
   res.status(err.statusCode || 500);
   res.json({ error: err.message });
 };

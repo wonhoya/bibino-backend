@@ -7,7 +7,7 @@ module.exports = {
   appPrivateKey: process.env.PRIVATE_KEY,
   googleVisionApiUrl: process.env.GOOGLE_VISION_API_URL,
   firebaseType: process.env.FIREBASE_TYPE,
-  fireebaseProjectId: process.env.FIREBASE_PROJECT_ID,
+  firebaseProjectId: process.env.FIREBASE_PROJECT_ID,
   firebasePrivateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID,
   firebasePrivateKey: process.env.FIREBASE_PRIVATE_KEY,
   firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL,
